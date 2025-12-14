@@ -41,6 +41,8 @@ public partial class NhanVien
 
     public virtual ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();
 
+    public virtual ICollection<LichHen> LichHens { get; set; } = new List<LichHen>();
+
     public virtual ChiNhanh? MaCnNavigation { get; set; }
 
     public virtual TaiKhoan? UserNameNavigation { get; set; }

@@ -29,6 +29,8 @@ public partial class KhachHang
 
     public virtual ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();
 
+    public virtual ICollection<LichHen> LichHens { get; set; } = new List<LichHen>();
+
     public virtual ICollection<ThuCung> ThuCungs { get; set; } = new List<ThuCung>();
 
     public virtual TaiKhoan? UserNameNavigation { get; set; }

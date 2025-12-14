@@ -21,6 +21,8 @@ public partial class ChiNhanh
 
     public virtual ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();
 
+    public virtual ICollection<LichHen> LichHens { get; set; } = new List<LichHen>();
+
     public virtual ICollection<LichSuDieuDong> LichSuDieuDongs { get; set; } = new List<LichSuDieuDong>();
 
     public virtual ICollection<NhanVien> NhanViens { get; set; } = new List<NhanVien>();
