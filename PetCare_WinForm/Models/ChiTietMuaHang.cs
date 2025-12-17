@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
-namespace PetCare_Web.Models;
+namespace PetCare_WinForm.Models;
 
 public partial class ChiTietMuaHang
 {

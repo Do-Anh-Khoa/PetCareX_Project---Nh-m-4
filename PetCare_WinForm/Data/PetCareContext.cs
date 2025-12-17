@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using PetCare_Web.Models;
+using PetCare_WinForm.Models;
 
-namespace PetCare_Web.Data;
+namespace PetCare_WinForm.Data;
 
 public partial class PetCareContext : DbContext
 {
@@ -48,6 +48,8 @@ public partial class PetCareContext : DbContext
 
     public virtual DbSet<KhachHang> KhachHangs { get; set; }
 
+    public virtual DbSet<LichHen> LichHens { get; set; }
+
     public virtual DbSet<LichSuDieuDong> LichSuDieuDongs { get; set; }
 
     public virtual DbSet<NhanVien> NhanViens { get; set; }
@@ -64,9 +66,11 @@ public partial class PetCareContext : DbContext
 
     public virtual DbSet<Vaccine> Vaccines { get; set; }
 
+    public virtual DbSet<Top10BacSiDoanhThu> Top10BacSiDoanhThu { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=ALMIRA\\MSSQLSERVER01;Database=PetCareX_DB;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=LAPTOP-VC4DCMU4\\MSSQLSERVER_2;Database=PetCareX;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -491,6 +495,43 @@ public partial class PetCareContext : DbContext
                 .HasConstraintName("FK__KHACH_HAN__UserN__48CFD27E");
         });
 
+        modelBuilder.Entity<LichHen>(entity =>
+        {
+            entity.HasKey(e => e.MaLichHen).HasName("PK__LICH_HEN__150F264FF03107A2");
+
+            entity.ToTable("LICH_HEN");
+
+            entity.Property(e => e.MaLichHen)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.GhiChu).HasMaxLength(200);
+            entity.Property(e => e.MaBs)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("MaBS");
+            entity.Property(e => e.MaCn)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("MaCN");
+            entity.Property(e => e.MaKh)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("MaKH");
+            entity.Property(e => e.TrangThai).HasMaxLength(50);
+
+            entity.HasOne(d => d.MaBsNavigation).WithMany(p => p.LichHens)
+                .HasForeignKey(d => d.MaBs)
+                .HasConstraintName("FK__LICH_HEN__MaBS__160F4887");
+
+            entity.HasOne(d => d.MaCnNavigation).WithMany(p => p.LichHens)
+                .HasForeignKey(d => d.MaCn)
+                .HasConstraintName("FK__LICH_HEN__MaCN__17036CC0");
+
+            entity.HasOne(d => d.MaKhNavigation).WithMany(p => p.LichHens)
+                .HasForeignKey(d => d.MaKh)
+                .HasConstraintName("FK__LICH_HEN__MaKH__151B244E");
+        });
+
         modelBuilder.Entity<LichSuDieuDong>(entity =>
         {
             entity.HasKey(e => new { e.MaDieuDong, e.NgayBatDau }).HasName("PK__LICH_SU___8070C1A4CB9E6398");
@@ -692,6 +733,13 @@ public partial class PetCareContext : DbContext
             entity.Property(e => e.TenVc)
                 .HasMaxLength(100)
                 .HasColumnName("TenVC");
+        });
+
+        modelBuilder.Entity<Top10BacSiDoanhThu>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("Top10BacSiDoanhThu");
         });
 
         OnModelCreatingPartial(modelBuilder);
