@@ -86,7 +86,11 @@ namespace PetCare_WinForm
         private void ButtonChamCong_Click(object sender, EventArgs e)
         {
             OpenChildForm(new Forms.ChamCongNV(), sender);
-            
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new Forms.PhanCa(), sender);
         }
     }
 }
