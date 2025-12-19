@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetCare_Web", "PetCare_Web\PetCare_Web.csproj", "{E376AC3D-23B1-421E-AF01-486A53CEA7A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetCare_WinForm", "PetCare_WinForm\PetCare_WinForm.csproj", "{3F56B9F6-6A4E-4FBE-BE74-67011BCCB7BF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E376AC3D-23B1-421E-AF01-486A53CEA7A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E376AC3D-23B1-421E-AF01-486A53CEA7A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E376AC3D-23B1-421E-AF01-486A53CEA7A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E376AC3D-23B1-421E-AF01-486A53CEA7A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F56B9F6-6A4E-4FBE-BE74-67011BCCB7BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F56B9F6-6A4E-4FBE-BE74-67011BCCB7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F56B9F6-6A4E-4FBE-BE74-67011BCCB7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F56B9F6-6A4E-4FBE-BE74-67011BCCB7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {395C9C3C-905F-4DAC-B92B-A7978F7254F4}
+	EndGlobalSection
+EndGlobal
