@@ -226,7 +226,10 @@ namespace PetCare_WinForm
             {
                 try
                 {
-                    var hoaDon = dbContext.HoaDons.FirstOrDefault(h => h.MaHd == invoice.MaHd);
+                    var hoaDon = dbContext.HoaDons
+                    .Where(h => h.MaHd == invoice.MaHd)
+                    .ExecuteUpdate(s =>
+                        s.SetProperty(h => h.TrangThai, "DaThanhToan"));
 
                     if (hoaDon == null)
                     {
@@ -238,8 +241,8 @@ namespace PetCare_WinForm
                         return;
                     }
 
-                    hoaDon.TrangThai = "DaThanhToan";
-                    dbContext.SaveChanges();
+                    //hoaDon.TrangThai = "DaThanhToan";
+                    //dbContext.SaveChanges();
 
                     ShowSuccessMessage(invoice);
                     LoadUnpaidInvoices(txtSearchCustomer.Text);
