@@ -11,8 +11,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PetCare_Web.Data;
 using PetCare_Web.Models;
-using PetCare_Web.Models;
-using PetCare_WebS.Models;
 
 namespace PetCare_WinForm.Forms
 {

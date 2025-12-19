@@ -1,3 +1,6 @@
+﻿// Function -> Chức năng cần thiết của chương trình
+// Effect only -> Chỉ là hiệu ứng giao diện, không tác động
+
 namespace PetCare_WinForm
 {
     public partial class Dashboard : Form
@@ -10,7 +13,14 @@ namespace PetCare_WinForm
         {
             InitializeComponent();
         }
+        
+        // Load dashboard
+        private void Dashboard_Load(object sender, EventArgs e)
+        {
+            timer1.Start();
+        }
 
+        // Helper methods for button activation (Effect only)
         private void ActivateButton(object sender)
         {
             if (sender != null)
@@ -27,6 +37,7 @@ namespace PetCare_WinForm
             }
         }
 
+        // Disable previously active button (Effect only)
         private void DisableButton()
         {
             foreach (Control previousBtn in PanelMenu.Controls)
@@ -40,6 +51,7 @@ namespace PetCare_WinForm
             }
         }
 
+        // Open child form inside the dashboard (Function)
         private void OpenChildForm(Form childForm, object btnSender)
         {
             if (activeForm != null)
@@ -68,6 +80,7 @@ namespace PetCare_WinForm
 
         }
 
+        // Doanh Thu Button Click (Functiona)
         private void ButtonDoanhThu_Click(object sender, EventArgs e)
         {
             OpenChildForm(new Forms.DoanhThu(), sender);
@@ -83,14 +96,23 @@ namespace PetCare_WinForm
         //    ActivateButton(sender);
         //}
 
+        // Cham Cong Button Click (Function)
         private void ButtonChamCong_Click(object sender, EventArgs e)
         {
             OpenChildForm(new Forms.ChamCongNV(), sender);
         }
 
+        // Phan Ca Button Click (Function)
         private void button1_Click(object sender, EventArgs e)
         {
             OpenChildForm(new Forms.PhanCa(), sender);
         }
+
+        // Update clock in real time (Function)
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            lblClock.Text = DateTime.Now.ToString("HH:mm:ss");
+        }
+
     }
 }

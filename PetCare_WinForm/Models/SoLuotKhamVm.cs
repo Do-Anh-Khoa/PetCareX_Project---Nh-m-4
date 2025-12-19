@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PetCare_WebS.Models
+namespace PetCare_Web.Models
 {
     public class SoLuotKhamVm
     {

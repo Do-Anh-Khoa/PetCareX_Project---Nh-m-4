@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             PanelMenu = new Panel();
+            lblClock = new Label();
             button1 = new Button();
             ButtonChamCong = new Button();
             ButtonDoanhThu = new Button();
@@ -37,6 +39,7 @@
             panel2 = new Panel();
             labelTitle = new Label();
             panelDesktopPane = new Panel();
+            timer1 = new System.Windows.Forms.Timer(components);
             PanelMenu.SuspendLayout();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
@@ -45,6 +48,7 @@
             // PanelMenu
             // 
             PanelMenu.BackColor = Color.FromArgb(51, 51, 76);
+            PanelMenu.Controls.Add(lblClock);
             PanelMenu.Controls.Add(button1);
             PanelMenu.Controls.Add(ButtonChamCong);
             PanelMenu.Controls.Add(ButtonDoanhThu);
@@ -54,6 +58,17 @@
             PanelMenu.Name = "PanelMenu";
             PanelMenu.Size = new Size(220, 554);
             PanelMenu.TabIndex = 0;
+            // 
+            // lblClock
+            // 
+            lblClock.AutoSize = true;
+            lblClock.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblClock.ForeColor = SystemColors.ButtonHighlight;
+            lblClock.Location = new Point(66, 502);
+            lblClock.Name = "lblClock";
+            lblClock.Size = new Size(78, 31);
+            lblClock.TabIndex = 6;
+            lblClock.Text = "--:--:--";
             // 
             // button1
             // 
@@ -153,6 +168,12 @@
             panelDesktopPane.Size = new Size(777, 474);
             panelDesktopPane.TabIndex = 2;
             // 
+            // timer1
+            // 
+            timer1.Enabled = true;
+            timer1.Interval = 1000;
+            timer1.Tick += timer1_Tick;
+            // 
             // Dashboard
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -163,7 +184,9 @@
             Controls.Add(PanelMenu);
             Name = "Dashboard";
             Text = "Dashboard";
+            Load += Dashboard_Load;
             PanelMenu.ResumeLayout(false);
+            PanelMenu.PerformLayout();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
@@ -182,5 +205,7 @@
         private Panel panelDesktopPane;
         private Button ButtonChamCong;
         private Button button1;
+        private Label lblClock;
+        private System.Windows.Forms.Timer timer1;
     }
 }

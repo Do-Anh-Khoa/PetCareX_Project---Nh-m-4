@@ -40,21 +40,21 @@ BEGIN
     -- 1. Kiem tra NV co ton tai
     IF NOT EXISTS (SELECT 1 FROM NHAN_VIEN WHERE MaNV = @MaNV)
     BEGIN
-        ;THROW 52001, N'Lỗi: Nhân viên không tồn tại.', 1;
+        ;THROW 52001, N'Nhân viên không tồn tại.', 1;
         RETURN;
     END
 
     -- 2. Kiem tra ca lam viec co ton tai
     IF NOT EXISTS (SELECT 1 FROM CA_LAM_VIEC WHERE MaCa = @MaCa)
     BEGIN
-        ;THROW 52002, N'Lỗi: Ca làm việc không tồn tại.', 1;
+        ;THROW 52002, N'Ca làm việc không tồn tại.', 1;
         RETURN;
     END
 
     -- 3. Kiem tra nhan vien da duoc phan cong vao ca do trong ngay hom do chua
     IF EXISTS (SELECT 1 FROM BANG_PHAN_CA WHERE MaCa = @MaCa AND MaNV = @MaNV AND NgayLamViec = @NgayLamViec)
     BEGIN
-        ;THROW 52003, N'Lỗi: Nhân viên đã được phân công ca này trong ngày đã chọn.', 1;
+        ;THROW 52003, N'Nhân viên đã được phân công ca này trong ngày đã chọn.', 1;
         RETURN;
     END
 
@@ -81,7 +81,7 @@ BEGIN
           AND NgayLamViec = @NgayLamViec
     )
     BEGIN
-        ;THROW 52004, N'Lỗi: Không tồn tại ca làm việc để xóa.', 2;
+        ;THROW 52004, N'Không tồn tại ca làm việc để xóa.', 2;
         RETURN;
     END
 
