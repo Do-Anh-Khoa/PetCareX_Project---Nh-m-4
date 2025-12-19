@@ -70,9 +70,11 @@ public partial class PetCareContext : DbContext
 
     public virtual DbSet<Vaccine> Vaccines { get; set; }
 
+    public virtual DbSet<Top10BacSiDoanhThu> Top10BacSiDoanhThu { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=ALMIRA\\MSSQLSERVER01;Database=PetCareX_DB;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=LAPTOP-VC4DCMU4\\MSSQLSERVER_2;Database=PetCareX_DB;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -765,6 +767,13 @@ public partial class PetCareContext : DbContext
             entity.Property(e => e.TenVc)
                 .HasMaxLength(100)
                 .HasColumnName("TenVC");
+        });
+
+        modelBuilder.Entity<Top10BacSiDoanhThu>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("Top10BacSiDoanhThu");
         });
 
         OnModelCreatingPartial(modelBuilder);
