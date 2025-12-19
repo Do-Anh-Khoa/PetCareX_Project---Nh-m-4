@@ -1,12 +1,11 @@
-﻿USE data8; -- Nhớ đổi tên DB cho đúng
+﻿USE data10; -- Nhớ đổi tên DB cho đúng
 GO
-
 -- 1. BẢNG TÀI KHOẢN
 create table TAI_KHOAN
 ( 
-  UserName nvarchar(100) NOT NULL, -- Giữ nguyên, thêm NOT NULL
-  MatKhau varchar(100) NOT NULL,   -- Thêm NOT NULL
-  QuyenHan nvarchar(100) NOT NULL, -- Thêm NOT NULL
+  UserName nvarchar(100) NOT NULL, 
+  MatKhau varchar(100) NOT NULL,   
+  QuyenHan nvarchar(100) NOT NULL, 
   primary key(UserName)
 )
 GO
@@ -15,9 +14,9 @@ GO
 create table CHI_NHANH
 ( 
   MaCN varchar (20) NOT NULL,
-  TenChiNhanh nvarchar (100) NOT NULL, -- Thêm NOT NULL
-  DiaChi nvarchar(100) NOT NULL,       -- Thêm NOT NULL
-  SoDienThoai varchar (100) NOT NULL,  -- Thêm NOT NULL
+  TenChiNhanh nvarchar (100) NOT NULL, 
+  DiaChi nvarchar(100) NOT NULL,       
+  SoDienThoai varchar (100) NOT NULL,  
   GioMoCua time,
   GioDongCua time,
   primary key(MaCN)
@@ -28,13 +27,13 @@ GO
 create table NHAN_VIEN
 ( 
   MaNV varchar(20) NOT NULL,
-  HoTen nvarchar(100) NOT NULL,    -- Thêm NOT NULL
-  NgaySinh Date NOT NULL,          -- Thêm NOT NULL
-  GioiTinh nvarchar (100) NOT NULL,-- Thêm NOT NULL
-  NgayVaoLam date NOT NULL,        -- Thêm NOT NULL
-  ChucVu nvarchar (100) NOT NULL,  -- Thêm NOT NULL
-  LuongCoBan decimal(18, 0) CHECK (LuongCoBan > 0), -- Giữ nguyên kiểu Decimal và Check cũ
-  MaCN varchar(20) NOT NULL,       -- Thêm NOT NULL
+  HoTen nvarchar(100) NOT NULL,    
+  NgaySinh Date NOT NULL,          
+  GioiTinh nvarchar (100) NOT NULL,
+  NgayVaoLam date NOT NULL,       
+  ChucVu nvarchar (100) NOT NULL,  
+  LuongCoBan decimal(18, 0) CHECK (LuongCoBan > 0), 
+  MaCN varchar(20) NOT NULL,      
   UserName nvarchar(100),
   primary key(MaNV),
   foreign key (MaCN) references CHI_NHANH(MaCN),
@@ -46,9 +45,9 @@ GO
 create table LICH_SU_DIEU_DONG
 ( 
   MaDieuDong varchar(20) NOT NULL,
-  NgayBatDau date NOT NULL,       -- Thêm NOT NULL
+  NgayBatDau date NOT NULL,       
   NgayKetThuc date,
-  MaCN varchar(20) NOT NULL,      -- Thêm NOT NULL
+  MaCN varchar(20) NOT NULL,     
   primary key(MaDieuDong,NgayBatDau),
   foreign key(MaCN) references CHI_NHANH(MaCN)
 )
@@ -69,9 +68,9 @@ GO
 create table VACCINE
 (
   MaVC varchar(20) NOT NULL,
-  TenVC nvarchar(100) NOT NULL,   -- Thêm NOT NULL
-  LoaiVC nvarchar(100) NOT NULL,  -- Thêm NOT NULL
-  GiaVC float CHECK (GiaVC >= 0), -- Giữ nguyên float, thêm Check >= 0
+  TenVC nvarchar(100) NOT NULL,   
+  LoaiVC nvarchar(100) NOT NULL,  
+  GiaVC float CHECK (GiaVC >= 0),
   primary key(MaVC)
 )
 GO
@@ -80,14 +79,14 @@ GO
 create table KHACH_HANG
 ( 
   MaKH varchar(20) NOT NULL,
-  HoTen nvarchar(100) NOT NULL,   -- Thêm NOT NULL
-  SoDT nvarchar(100) NOT NULL,    -- Thêm NOT NULL
+  HoTen nvarchar(100) NOT NULL,   
+  SoDT nvarchar(100) NOT NULL,   
   Email nvarchar(100),
   CCCD nvarchar(100),
   GioiTinh nvarchar(100),
   NgaySinh date,
-  CapHoiVien nvarchar(100) DEFAULT 'CoBan', -- Thêm giá trị mặc định
-  DiemTichLuy int DEFAULT 0,                -- Thêm giá trị mặc định 0
+  CapHoiVien nvarchar(100) DEFAULT 'CoBan', 
+  DiemTichLuy int DEFAULT 0,              
   UserName nvarchar(100),
   primary key(MaKH),
   foreign key(UserName) references TAI_KHOAN(UserName)
@@ -98,11 +97,11 @@ GO
 create table THU_CUNG
 ( 
   MaTC varchar(20) NOT NULL,
-  TenTC nvarchar (100) NOT NULL,  -- Thêm NOT NULL
-  Loai nvarchar (100) NOT NULL,   -- Thêm NOT NULL
+  TenTC nvarchar (100) NOT NULL,  
+  Loai nvarchar (100) NOT NULL,   
   Giong nvarchar(100),
   TinhTrangSucKhoe nvarchar(100),
-  MaKH varchar(20) NOT NULL,      -- Thêm NOT NULL
+  MaKH varchar(20) NOT NULL,    
   primary key(MaTC),
   foreign key(MaKH) references KHACH_HANG(MaKH)
 )
@@ -112,13 +111,14 @@ GO
 create table HOA_DON
 ( 
   MaHD varchar(20) NOT NULL,
-  NgayLap date NOT NULL DEFAULT GETDATE(), -- Thêm NOT NULL và mặc định ngày hiện tại
-  TongTien decimal(18, 0) DEFAULT 0 CHECK (TongTien >= 0), -- Giữ decimal, thêm Default và Check
+  NgayLap date NOT NULL DEFAULT GETDATE(),
+  TongTien decimal(18, 0) DEFAULT 0 CHECK (TongTien >= 0), 
   KhuyenMai nvarchar(100),
-  HinhThucThanhToan nvarchar(100) NOT NULL, -- Thêm NOT NULL
-  MaNV varchar(20) NOT NULL,      -- Thêm NOT NULL
-  MaKH varchar(20) NOT NULL,      -- Thêm NOT NULL
-  MaCN varchar(20) NOT NULL,      -- Thêm NOT NULL
+  HinhThucThanhToan nvarchar(100) NOT NULL,
+  TrangThai nvarchar(100) not null,
+  MaNV varchar(20) NOT NULL,     
+  MaKH varchar(20) NOT NULL,      
+  MaCN varchar(20) NOT NULL,     
   primary key(MaHD),
   foreign key(MaNV) references NHAN_VIEN(MaNV),
   foreign key(MaKH) references KHACH_HANG(MaKH),
@@ -133,8 +133,8 @@ create table DANH_GIA
   DiemThaiDo float CHECK (DiemThaiDo BETWEEN 0 AND 10),
   DiemHaiLong float,
   BinhLuan nvarchar(500),
-  NgayDG date DEFAULT GETDATE(), -- Thêm mặc định ngày hiện tại
-  MaHD varchar(20) NOT NULL,     -- Thêm NOT NULL
+  NgayDG date DEFAULT GETDATE(), 
+  MaHD varchar(20) NOT NULL,    
   MaKH varchar(20),
   MaNV varchar(20),
   primary key(MaDG),
@@ -149,7 +149,7 @@ create table DICH_VU
 ( 
   MaDV varchar(20) NOT NULL,
   MaTC varchar(20) NULL,
-  MaCN varchar(20) NOT NULL,      -- Thêm NOT NULL
+  MaCN varchar(20) NOT NULL,     
   primary key(MaDV),
   foreign key(MaTC) references THU_CUNG(MaTC),
   foreign key(MaCN) references CHI_NHANH(MaCN)
@@ -172,9 +172,9 @@ create table DV_KHAM
   TrieuChung nvarchar(100),
   ChuanDoan nvarchar(100),
   ToaThuoc  nvarchar(100),
-  BacSiPhuTrach varchar(20) NOT NULL, -- Thêm NOT NULL
+  BacSiPhuTrach varchar(20) NOT NULL, 
   NgayTaiKham Date,
-  GiaKhamBenh float CHECK (GiaKhamBenh >= 0), -- Giữ float, thêm Check >= 0
+  GiaKhamBenh float CHECK (GiaKhamBenh >= 0), 
   primary key(MaKham),
   foreign key (BacSiPhuTrach) references NHAN_VIEN(MaNV),
   foreign key(MaKham) references DICH_VU(MaDV)
@@ -184,7 +184,7 @@ GO
 create table DV_TIEM_PHONG_DON_LE
 (
   MaTiem varchar (20) NOT NULL,
-  BacSiPhuTrach varchar(20) NOT NULL, -- Thêm NOT NULL
+  BacSiPhuTrach varchar(20) NOT NULL, 
   primary key(MaTiem),
   foreign key (MaTiem) references DICH_VU(MaDV),
   foreign key (BacSiPhuTrach) references NHAN_VIEN(MaNV)
@@ -195,9 +195,9 @@ create table CHI_TIET_TIEM
 (
   MaVC varchar(20) NOT NULL,
   MaTiem varchar (20) NOT NULL,
-  NgayTiem date NOT NULL,         -- Thêm NOT NULL
+  NgayTiem date NOT NULL,        
   LieuLuong int CHECK (LieuLuong > 0),
-  Gia float CHECK (Gia >= 0),     -- Giữ float, thêm Check >= 0
+  Gia float CHECK (Gia >= 0),    
   primary key( MaVC,MaTiem),
   foreign key(MaTiem) references DV_TIEM_PHONG_DON_LE(MaTiem),
   foreign key(MaVC) references VACCINE(MaVC)
@@ -208,11 +208,11 @@ GO
 create table DV_TIEM_PHONG_THEO_THANG
 ( 
   MaGoi varchar(20) NOT NULL,
-  TenGoi nvarchar(100) NOT NULL,  -- Thêm NOT NULL
+  TenGoi nvarchar(100) NOT NULL, 
   SoThang int CHECK (SoThang > 0),
-  NgayDK date NOT NULL,           -- Thêm NOT NULL
-  NgayKT date NOT NULL,           -- Thêm NOT NULL
-  GiaGoi float CHECK (GiaGoi >= 0), -- Giữ float, thêm Check
+  NgayDK date NOT NULL,         
+  NgayKT date NOT NULL,         
+  GiaGoi float CHECK (GiaGoi >= 0), 
   BacSiPhuTrach varchar(20),
   primary key (MaGoi),
   foreign key(MaGoi) references DICH_VU(MaDV),
@@ -237,9 +237,9 @@ GO
 create table SAN_PHAM
 (
   MaSP varchar(20) NOT NULL,
-  TenSP nvarchar(100) NOT NULL,   -- Thêm NOT NULL
-  LoaiSP nvarchar(100) NOT NULL,  -- Thêm NOT NULL
-  GiaBan float CHECK (GiaBan >= 0), -- Giữ float, thêm Check
+  TenSP nvarchar(100) NOT NULL,  
+  LoaiSP nvarchar(100) NOT NULL,  
+  GiaBan float CHECK (GiaBan >= 0),
   primary key (MaSP)
 )
 GO
@@ -247,7 +247,7 @@ GO
 create table DV_MUA_HANG
 ( 
   MaMuaHang varchar (20) NOT NULL,
-  NhanVienBanHang varchar(20) NOT NULL, -- Thêm NOT NULL
+  NhanVienBanHang varchar(20) NOT NULL, 
   primary key(MaMuaHang),
   foreign key(NhanVienBanHang) references NHAN_VIEN(MaNV),
   foreign key(MaMuaHang) references DICH_VU(MaDV)
@@ -256,8 +256,8 @@ GO
 
 create table CHI_TIET_MUA_HANG
 ( 
-  SoLuong int CHECK (SoLuong > 0), -- Giữ nguyên Check
-  DonGia float CHECK (DonGia >= 0), -- Giữ float, thêm Check
+  SoLuong int CHECK (SoLuong > 0),
+  DonGia float CHECK (DonGia >= 0),
   MaMuaHang varchar(20) NOT NULL,
   MaSP varchar(20) NOT NULL,
   primary key(MaSP, MaMuaHang),
@@ -271,7 +271,7 @@ CREATE TABLE TON_KHO_SAN_PHAM
 (
   MaCN varchar(20) NOT NULL,
   MaSP varchar(20) NOT NULL,
-  SoLuong int DEFAULT 0 CHECK (SoLuong >= 0), -- Thêm Default 0 và Check >= 0
+  SoLuong int DEFAULT 0 CHECK (SoLuong >= 0), 
   NgaySanXuat date,
   NgayHetHan date,
   PRIMARY KEY (MaCN, MaSP),
@@ -284,8 +284,8 @@ CREATE TABLE TON_KHO_VACCINE
 (
   MaCN varchar(20) NOT NULL,
   MaVC varchar(20) NOT NULL,
-  SoLo varchar(50) NOT NULL,      -- Thêm NOT NULL
-  SoLuong int DEFAULT 0 CHECK (SoLuong >= 0), -- Thêm Default 0 và Check >= 0
+  SoLo varchar(50) NOT NULL,    
+  SoLuong int DEFAULT 0 CHECK (SoLuong >= 0), 
   NgaySanXuat date,
   NgayHetHan date,
   PRIMARY KEY (MaCN, MaVC, SoLo), 
@@ -298,7 +298,7 @@ GO
 create table CA_LAM_VIEC
 (
   MaCa varchar(20) NOT NULL,
-  TenCa nvarchar(100) NOT NULL,   -- Thêm NOT NULL
+  TenCa nvarchar(100) NOT NULL, 
   GioBD time,
   GioKT time,
   primary key (MaCa)
@@ -309,7 +309,7 @@ create table BANG_PHAN_CA
 (
   MaCa varchar(20) NOT NULL,
   MaNV varchar(20) NOT NULL,
-  NgayLamViec date NOT NULL,      -- Thêm NOT NULL
+  NgayLamViec date NOT NULL,   
   primary key (MaCa, MaNV,NgayLamViec),
   foreign key(MaNV) references NHAN_VIEN(MaNV),
   foreign key (MaCa) references CA_LAM_VIEC(MaCa)
@@ -322,7 +322,7 @@ create table BANG_LUONG_THANG
   Thang int NOT NULL,
   Nam int NOT NULL,
   TongGioCong int DEFAULT 0,
-  LuongCoBan decimal(18,0), -- Giữ nguyên kiểu Decimal của bạn
+  LuongCoBan decimal(18,0), 
   Thuong decimal(18,0) DEFAULT 0,
   TongLuong decimal(18,0),
   NgayTinhLuong date DEFAULT GETDATE(),
@@ -340,4 +340,19 @@ create table CHAM_CONG
   primary key( MaNV,NgayLamViec),
   foreign key(MaNV) references NHAN_VIEN(MaNV) on delete cascade
 )
+GO
+
+CREATE TABLE LICH_HEN (
+    MaLichHen varchar(20) NOT NULL PRIMARY KEY,
+    NgayHen date,
+    GioHen time,
+    TrangThai nvarchar(50), -- Ví dụ: 'ChoXacNhan', 'DaXacNhan', 'Huy', 'DaHoanThanh'
+    GhiChu nvarchar(200),
+    MaKH varchar(20),
+    MaBS varchar(20), 
+    MaCN varchar(20), 
+    FOREIGN KEY (MaKH) REFERENCES KHACH_HANG(MaKH),
+    FOREIGN KEY (MaBS) REFERENCES NHAN_VIEN(MaNV),
+    FOREIGN KEY (MaCN) REFERENCES CHI_NHANH(MaCN)
+);
 GO
