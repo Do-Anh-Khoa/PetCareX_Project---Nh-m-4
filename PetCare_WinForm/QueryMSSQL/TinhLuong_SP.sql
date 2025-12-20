@@ -51,18 +51,6 @@ BEGIN
     UPDATE BANG_LUONG_THANG
     SET TongLuong = (TongGioCong * LuongCoBan) + Thuong
     WHERE Thang = @Thang AND Nam = @Nam;
-
-    -- 4. Trả về kết quả để hiển thị lên Grid ngay lập tức
-    SELECT 
-        bl.MaNV, 
-        nv.HoTen, 
-        bl.TongGioCong, 
-        bl.LuongCoBan, 
-        bl.Thuong, 
-        bl.TongLuong 
-    FROM BANG_LUONG_THANG bl
-    JOIN NHAN_VIEN nv ON bl.MaNV = nv.MaNV
-    WHERE bl.Thang = @Thang AND bl.Nam = @Nam;
 END
 GO
 
@@ -98,3 +86,4 @@ GO
 EXEC sp_XemBangLuong
 	@Thang = 1,
 	@Nam = 2025
+
