@@ -13,7 +13,7 @@ namespace PetCare_WinForm
         {
             InitializeComponent();
         }
-        
+
         // Load dashboard
         private void Dashboard_Load(object sender, EventArgs e)
         {
@@ -86,16 +86,6 @@ namespace PetCare_WinForm
             OpenChildForm(new Forms.DoanhThu(), sender);
         }
 
-        //private void ButtonHieuSuatCV_Click(object sender, EventArgs e)
-        //{
-        //    OpenChildForm(new Forms.HieuSuat(), sender); 
-        //}
-
-        //private void ButtonPhanHoiKH_Click(object sender, EventArgs e)
-        //{
-        //    ActivateButton(sender);
-        //}
-
         // Cham Cong Button Click (Function)
         private void ButtonChamCong_Click(object sender, EventArgs e)
         {
@@ -114,5 +104,11 @@ namespace PetCare_WinForm
             lblClock.Text = DateTime.Now.ToString("HH:mm:ss");
         }
 
+
+        // Quan ly Nhan Vien Button Click (Function)
+        private void button2_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new Forms.TinhLuongNV(), sender);
+        }
     }
 }

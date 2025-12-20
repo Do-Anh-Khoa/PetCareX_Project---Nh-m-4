@@ -40,6 +40,7 @@
             labelTitle = new Label();
             panelDesktopPane = new Panel();
             timer1 = new System.Windows.Forms.Timer(components);
+            button2 = new Button();
             PanelMenu.SuspendLayout();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
@@ -48,6 +49,7 @@
             // PanelMenu
             // 
             PanelMenu.BackColor = Color.FromArgb(51, 51, 76);
+            PanelMenu.Controls.Add(button2);
             PanelMenu.Controls.Add(lblClock);
             PanelMenu.Controls.Add(button1);
             PanelMenu.Controls.Add(ButtonChamCong);
@@ -174,6 +176,21 @@
             timer1.Interval = 1000;
             timer1.Tick += timer1_Tick;
             // 
+            // button2
+            // 
+            button2.Dock = DockStyle.Top;
+            button2.FlatAppearance.BorderSize = 0;
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.Font = new Font("Segoe UI", 10F);
+            button2.ForeColor = Color.WhiteSmoke;
+            button2.Location = new Point(0, 260);
+            button2.Name = "button2";
+            button2.Size = new Size(220, 60);
+            button2.TabIndex = 7;
+            button2.Text = "Quản lý lương";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
             // Dashboard
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -207,5 +224,6 @@
         private Button button1;
         private Label lblClock;
         private System.Windows.Forms.Timer timer1;
+        private Button button2;
     }
 }
