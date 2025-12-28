@@ -40,12 +40,6 @@ namespace PetCare_WinForm
             {
                 _maKhachHang = lichHen.MaKh;
                 _maChiNhanh = lichHen.MaCn;
-
-                // Tu dong dien Trieu Chung tu Ghi Chu cua lich hen
-                if (!string.IsNullOrEmpty(lichHen.GhiChu))
-                {
-                    txtTrieuChung.Text = lichHen.GhiChu;
-                }
             }
         }
 

@@ -97,7 +97,7 @@ public partial class PetCareContext : DbContext
                 .HasForeignKey(d => d.MaNv)
                 .HasConstraintName("FK__BANG_LUONG__MaNV__22751F6C");
         });
-       
+
         modelBuilder.Entity<BangPhanCa>(entity =>
         {
             entity.HasKey(e => new { e.MaCa, e.MaNv, e.NgayLamViec }).HasName("PK__BANG_PHA__2965A1F9EF20C9C3");
@@ -122,7 +122,7 @@ public partial class PetCareContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__BANG_PHAN___MaNV__1BC821DD");
         });
-       
+
         modelBuilder.Entity<CaLamViec>(entity =>
         {
             entity.HasKey(e => e.MaCa).HasName("PK__CA_LAM_V__27258E7B48C600E7");
@@ -136,7 +136,7 @@ public partial class PetCareContext : DbContext
             entity.Property(e => e.GioKt).HasColumnName("GioKT");
             entity.Property(e => e.TenCa).HasMaxLength(100);
         });
-  
+
         modelBuilder.Entity<ChamCong>(entity =>
         {
             entity.HasKey(e => new { e.MaNv, e.NgayLamViec }).HasName("PK__CHAM_CON__E402F82157058E57");
@@ -771,8 +771,3 @@ public partial class PetCareContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
-
-
-
-
-

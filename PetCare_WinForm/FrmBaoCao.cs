@@ -1,5 +1,4 @@
 
-
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -14,9 +13,9 @@ namespace PetCare_WinForm
     {
         public class ChiNhanhItem
         {
-            public string MaCN { get; set; }
-            public string TenCN { get; set; }
-            public override string ToString() { return TenCN; }
+            public string? MaCN { get; set; }
+            public string? TenCN { get; set; }
+            public override string ToString() { return TenCN ?? ""; }
         }
 
         public FrmBaoCao()
@@ -51,8 +50,8 @@ namespace PetCare_WinForm
                             {
                                 cboChiNhanh.Items.Add(new ChiNhanhItem 
                                 { 
-                                    MaCN = reader["MaCN"].ToString(), 
-                                    TenCN = reader["TenChiNhanh"].ToString() 
+                                    MaCN = reader["MaCN"]?.ToString() ?? "", 
+                                    TenCN = reader["TenChiNhanh"]?.ToString() ?? "" 
                                 });
                             }
                         }
@@ -194,7 +193,7 @@ namespace PetCare_WinForm
 
             if (cboNam.SelectedIndex > 0)
             {
-                int nam = int.Parse(cboNam.SelectedItem.ToString());
+                int nam = int.Parse(cboNam.SelectedItem?.ToString() ?? "0");
                 tuNgay = new DateTime(nam, 1, 1);
                 denNgay = new DateTime(nam, 12, 31);
             }

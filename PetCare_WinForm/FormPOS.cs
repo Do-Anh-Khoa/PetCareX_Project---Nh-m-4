@@ -716,8 +716,21 @@ namespace PetCare_WinForm
                 int points = selectedCustomer.DiemTichLuy ?? 0;
                 lblCustomerPoints.Text = $"Điểm: {points}";
 
-                string rank = selectedCustomer.CapHoiVien ?? "Thường";
-                lblCustomerRank.Text = $"Hạng: {rank}";
+                string rank = selectedCustomer.CapHoiVien ?? "CoBan";
+                string tmpRank = rank;
+                if (tmpRank == "VIP")
+                {
+                    tmpRank = "VIP";
+                }
+                else if (tmpRank == "ThanThiet")
+                {
+                    tmpRank = "Thân thiết";
+                }
+                else
+                {
+                    tmpRank = "Cơ bản";
+                }
+                lblCustomerRank.Text = $"Hạng: {tmpRank}";
 
                 if (rank.Equals("VIP", StringComparison.OrdinalIgnoreCase))
                 {
@@ -725,7 +738,7 @@ namespace PetCare_WinForm
                     lblCustomerDiscount.Text = "Giảm giá: 15%";
                     lblCustomerDiscount.ForeColor = Color.FromArgb(230, 126, 34);
                 }
-                else if (rank.Equals("Thân thiết", StringComparison.OrdinalIgnoreCase))
+                else if (rank.Equals("ThanThiet", StringComparison.OrdinalIgnoreCase))
                 {
                     discountPercent = 5;
                     lblCustomerDiscount.Text = "Giảm giá: 5%";
@@ -854,7 +867,7 @@ namespace PetCare_WinForm
                             SoDt = txtPhone.Text.Trim(),
                             Email = txtEmail.Text.Trim(),
                             GioiTinh = cboGender.SelectedItem.ToString(),
-                            CapHoiVien = "Thường",
+                            CapHoiVien = "CoBan",
                             DiemTichLuy = 0
                         };
 
@@ -1005,11 +1018,12 @@ namespace PetCare_WinForm
                         dbContext.DvMuaHangs.Add(dvMuaHang);
                         dbContext.SaveChanges();
 
-                        //var chiTietDvSp = new chiTietDvSd
-                        //{
-                        //    MaDv = maMuaHang,
-                        //    MaHd = maHd
-                        //};
+                        var chiTietDvSp = new ChiTietDvSd
+                        {
+                            MaDv = maMuaHang,
+                            MaHd = maHd
+                        };
+                        dbContext.SaveChanges();
 
                         foreach (DataRow row in invoiceTable.Rows)
                         {
@@ -1095,9 +1109,21 @@ namespace PetCare_WinForm
 
             if (selectedCustomer != null)
             {
+                var rank = selectedCustomer.CapHoiVien;
+                if(rank == "VIP")
+                {
+                    rank = "VIP";
+                }
+                else if(rank == "ThanThiet")
+                {
+                    rank = "Thân thiết";
+                }else
+                {
+                    rank = "Cơ bản";
+                }
                 invoice += $"Khách hàng: {selectedCustomer.HoTen}\n";
                 invoice += $"SĐT: {selectedCustomer.SoDt}\n";
-                invoice += $"Hạng: {selectedCustomer.CapHoiVien ?? "Thường"}\n";
+                invoice += $"Hạng: {rank}\n";
             }
 
             invoice += "───────────────────────────────────────\n\n";
@@ -1107,9 +1133,8 @@ namespace PetCare_WinForm
                 invoice += $"{row["TenSP"]}\n";
                 invoice += $"  SL: {row["SoLuong"]} x {Convert.ToDecimal(row["DonGia"]):N0}đ";
                 invoice += $" = {Convert.ToDecimal(row["ThanhTien"]):N0}đ\n";
-                invoice += $"Trạng Thái: Chưa thanh toán\n\n";
             }
-
+            invoice += $"Trạng Thái: Chưa thanh toán\n\n";
             invoice += "───────────────────────────────────────\n";
             invoice += $"Tạm tính: {subtotal:N0}đ\n";
 
