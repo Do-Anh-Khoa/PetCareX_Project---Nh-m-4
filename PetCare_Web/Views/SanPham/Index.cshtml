@@ -1,0 +1,38 @@
+﻿@model IEnumerable<PetCare_Web.Models.SanPham>
+
+@{
+    ViewData["Title"] = "Mua sắm";
+}
+
+<div class="container mt-4">
+    <h2>🛍️ Cửa Hàng Thú Cưng</h2>
+
+    <form asp-controller="SanPham" asp-action="Index" method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="searchString" class="form-control" placeholder="Tìm tên thuốc, thức ăn...">
+            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+        </div>
+    </form>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.TenSp</h5>
+                        <p class="card-text text-muted">@item.LoaiSp</p>
+                        <h6 class="text-danger">@string.Format("{0:N0} VNĐ", item.GiaBan)</h6>
+                    
+
+                        <a asp-action="DatMua" asp-route-id="@item.MaSp"
+                           class="btn btn-success w-100"
+                           onclick="return confirm('Bạn muốn đặt mua sản phẩm này?');">
+                            🛒 Đặt Mua Ngay
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
