@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PetCare_Web.Models;
+using PetCare_WinForm;
+using System;
+using System.Collections.Generic;
 
 namespace PetCare_Web.Data;
 
@@ -69,6 +70,21 @@ public partial class PetCareContext : DbContext
     public virtual DbSet<TonKhoVaccine> TonKhoVaccines { get; set; }
 
     public virtual DbSet<Vaccine> Vaccines { get; set; }
+
+    // FrmDuyetLich Views
+    public virtual DbSet<LichHenView> LichHenViews { get; set; }
+    public virtual DbSet<BacSiView> BacSiViews { get; set; }
+    public virtual DbSet<ChiNhanhView> ChiNhanhViews { get; set; }
+    public virtual DbSet<KhachHangInfoView> KhachHangInfoViews { get; set; }
+    public virtual DbSet<ThuCungInfoView> ThuCungInfoViews { get; set; }
+
+    // Lich_Hen Views
+    public virtual DbSet<LichHenKhamView> LichHenKhamViews { get; set; }
+
+    // Kham_Benh Views
+    public virtual DbSet<VaccineView> VaccineViews { get; set; }
+    public virtual DbSet<ThongTinKhamView> ThongTinKhamViews { get; set; }
+    public virtual DbSet<LichSuKhamResult> LichSuKhamResults { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -766,6 +782,19 @@ public partial class PetCareContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("TenVC");
         });
+
+        // 2. Cấu hình HasNoKey (Vì đây là kết quả SELECT, không phải bảng thật)
+        modelBuilder.Entity<LichHenView>().HasNoKey();
+        modelBuilder.Entity<BacSiView>().HasNoKey();
+        modelBuilder.Entity<ChiNhanhView>().HasNoKey();
+        modelBuilder.Entity<KhachHangInfoView>().HasNoKey();
+        modelBuilder.Entity<ThuCungInfoView>().HasNoKey();
+
+        modelBuilder.Entity<LichHenKhamView>().HasNoKey();
+
+        modelBuilder.Entity<VaccineView>().HasNoKey();
+        modelBuilder.Entity<ThongTinKhamView>().HasNoKey();
+        modelBuilder.Entity<LichSuKhamResult>().HasNoKey();
 
         OnModelCreatingPartial(modelBuilder);
     }
