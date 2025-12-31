@@ -26,7 +26,7 @@ BEGIN
     JOIN KHACH_HANG kh ON hd.MaKH = kh.MaKH
     JOIN NHAN_VIEN nv ON hd.MaNV = nv.MaNV
     JOIN CHI_NHANH cn ON hd.MaCN = cn.MaCN
-    WHERE 
+    WHERE
         (@TuNgay IS NULL OR CAST(hd.NgayLap AS DATE) >= @TuNgay)
         AND (@DenNgay IS NULL OR CAST(hd.NgayLap AS DATE) <= @DenNgay)
         AND (@MaCN IS NULL OR hd.MaCN = @MaCN)

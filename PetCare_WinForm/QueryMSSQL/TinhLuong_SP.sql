@@ -30,7 +30,7 @@ BEGIN
               AND YEAR(cc.NgayLamViec) = @Nam
         ), 0) AS TongGioCong,
 
-        nv.LuongCoBan, -- Giả sử LuongCoBan ở đây là Lương theo giờ (dựa theo công thức của bạn)
+        nv.LuongCoBan, -- Giả sử LuongCoBan ở đây là Lương theo giờ
 
         -- B. Tính Thưởng (Hoa hồng từ Hóa Đơn)
         ISNULL((
@@ -42,7 +42,7 @@ BEGIN
         ), 0) AS Thuong,
 
         -- C. Tính Tổng Lương = (Giờ * Lương Cơ Bản) + Thưởng
-        0, -- Tạm thời để 0, sẽ update ở bước sau hoặc tính trực tiếp ở đây (xem bên dưới)
+        0, -- Tạm thời để 0, sẽ update ở bước sau hoặc tính trực tiếp ở đây
         
         GETDATE() -- Ngày tính lương
     FROM NHAN_VIEN nv;

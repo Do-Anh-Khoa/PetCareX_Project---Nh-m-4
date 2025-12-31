@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using PetCare_Web.Models;
+using PetCare_WinForm.Models;
+using static PetCare_WinForm.FrmTimKiemCaLam;
 
 namespace PetCare_Web.Data;
 
@@ -71,6 +73,8 @@ public partial class PetCareContext : DbContext
     public virtual DbSet<Vaccine> Vaccines { get; set; }
 
     public virtual DbSet<Top10BacSiDoanhThu> Top10BacSiDoanhThu { get; set; }
+
+    public DbSet<KetQuaTimKiemCaLamViec> KetQuaTimKiemCaLamViec { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -776,6 +780,10 @@ public partial class PetCareContext : DbContext
                 .ToView("Top10BacSiDoanhThu");
         });
 
+        modelBuilder.Entity<ExistsOnly>().HasNoKey();
+        modelBuilder.Entity<KetQuaTimKiemCaLamViec>()
+        .HasNoKey()
+        .ToView(null);
         OnModelCreatingPartial(modelBuilder);
     }
 
