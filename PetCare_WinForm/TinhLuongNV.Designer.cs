@@ -1,4 +1,4 @@
-﻿namespace PetCare_WinForm.Forms
+﻿namespace PetCare_WinForm
 {
     partial class TinhLuongNV
     {

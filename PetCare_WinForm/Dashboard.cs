@@ -83,19 +83,19 @@ namespace PetCare_WinForm
         // Doanh Thu Button Click (Functiona)
         private void ButtonDoanhThu_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new Forms.DoanhThu(), sender);
+            OpenChildForm(new DoanhThu(), sender);
         }
 
         // Cham Cong Button Click (Function)
         private void ButtonChamCong_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new Forms.ChamCongNV(), sender);
+            OpenChildForm(new ChamCongNV(), sender);
         }
 
         // Phan Ca Button Click (Function)
         private void button1_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new Forms.PhanCa(), sender);
+            OpenChildForm(new PhanCaNewLayout(), sender);
         }
 
         // Update clock in real time (Function)
@@ -108,7 +108,7 @@ namespace PetCare_WinForm
         // Quan ly Nhan Vien Button Click (Function)
         private void button2_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new Forms.TinhLuongNV(), sender);
+            OpenChildForm(new TinhLuongNV(), sender);
         }
     }
 }

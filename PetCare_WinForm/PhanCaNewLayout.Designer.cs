@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             dataGridView_Chinh = new DataGridView();
-            label1 = new Label();
             btn_ThemCaLam = new Button();
             btn_XoaCaLam = new Button();
             btn_TimKiemCaLam = new Button();
@@ -39,21 +38,11 @@
             // dataGridView_Chinh
             // 
             dataGridView_Chinh.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView_Chinh.Location = new Point(1, 56);
+            dataGridView_Chinh.Location = new Point(1, 12);
             dataGridView_Chinh.Name = "dataGridView_Chinh";
             dataGridView_Chinh.RowHeadersWidth = 51;
-            dataGridView_Chinh.Size = new Size(798, 289);
+            dataGridView_Chinh.Size = new Size(798, 333);
             dataGridView_Chinh.TabIndex = 0;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.Location = new Point(273, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(262, 38);
-            label1.TabIndex = 1;
-            label1.Text = "Danh sách phân ca";
             // 
             // btn_ThemCaLam
             // 
@@ -96,20 +85,17 @@
             Controls.Add(btn_TimKiemCaLam);
             Controls.Add(btn_XoaCaLam);
             Controls.Add(btn_ThemCaLam);
-            Controls.Add(label1);
             Controls.Add(dataGridView_Chinh);
             Name = "PhanCaNewLayout";
             Text = "Phân ca";
             Load += PhanCaNewLayout_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView_Chinh).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
         private DataGridView dataGridView_Chinh;
-        private Label label1;
         private Button btn_ThemCaLam;
         private Button btn_XoaCaLam;
         private Button btn_TimKiemCaLam;

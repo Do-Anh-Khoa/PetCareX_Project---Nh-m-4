@@ -15,7 +15,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 // Check-in và check-out chỉ thực hiện được 1 lần trong ngày
 
-namespace PetCare_WinForm.Forms
+namespace PetCare_WinForm
 {
     public partial class ChamCongNV : Form
     {

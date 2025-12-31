@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using PetCare_Web.Data;
 using PetCare_Web.Models;
 
-namespace PetCare_WinForm.Forms
+namespace PetCare_WinForm
 {
     public partial class DoanhThu : Form
     {
