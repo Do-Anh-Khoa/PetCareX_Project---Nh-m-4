@@ -1,0 +1,29 @@
+﻿@model PetCare_Web.Models.HoaDon
+
+<div class="container mt-5 text-center">
+    <div class="card shadow-lg mx-auto" style="max-width: 500px;">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">💳 CỔNG THANH TOÁN QR</h4>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Mã đơn hàng: <strong>@Model.MaHd</strong></p>
+            <h2 class="text-danger fw-bold my-3">@string.Format("{0:N0} VNĐ", Model.TongTien)</h2>
+
+            <p>Quét mã QR để thanh toán:</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ThanhToan_PetCareX_@Model.MaHd"
+                 alt="QR Code" class="img-thumbnail mb-3" />
+
+            <div class="alert alert-warning">
+                <small>Nội dung chuyển khoản: <b>@Model.MaHd</b></small>
+            </div>
+
+            <hr />
+            <div class="d-grid gap-2">
+                <a href="/ThanhToan/XacNhanThanhToan?maHd=@Model.MaHd" class="btn btn-success btn-lg">
+                    ✅ TÔI ĐÃ CHUYỂN KHOẢN
+                </a>
+                <a href="/SanPham" class="btn btn-outline-secondary">Mua thêm món khác</a>
+            </div>
+        </div>
+    </div>
+</div>
