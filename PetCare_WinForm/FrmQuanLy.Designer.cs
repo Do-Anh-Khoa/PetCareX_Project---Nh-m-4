@@ -1,6 +1,6 @@
 ﻿namespace PetCare_WinForm
 {
-    partial class Dashboard
+    partial class FrmQuanLy
     {
         /// <summary>
         ///  Required designer variable.

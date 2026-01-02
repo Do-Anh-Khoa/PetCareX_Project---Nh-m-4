@@ -3,13 +3,13 @@
 
 namespace PetCare_WinForm
 {
-    public partial class Dashboard : Form
+    public partial class FrmQuanLy : Form
     {
         private Button? currentButton;
         private Form? activeForm;
 
         // Constructor
-        public Dashboard()
+        public FrmQuanLy()
         {
             InitializeComponent();
         }

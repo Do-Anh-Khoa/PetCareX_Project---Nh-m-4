@@ -1,4 +1,4 @@
-namespace PetCare_WinForm
+﻿namespace PetCare_WinForm
 {
     internal static class Program
     {
@@ -13,9 +13,18 @@ namespace PetCare_WinForm
             ApplicationConfiguration.Initialize();
 
             // Application.Run(new FormPOS());
-           
-            Application.Run(new FrmHome());
-            // Application.Run(new FrmLogin());
+
+            // Test nhân viên
+            // Application.Run(new FrmHome());
+
+            // Test Bác sĩ
+            // Application.Run(new Lich_Hen());
+            
+            // Test Quản lý
+            // Application.Run(new Dashboard());
+
+            // Test login
+            Application.Run(new FrmLogin());
         }
     }
 }

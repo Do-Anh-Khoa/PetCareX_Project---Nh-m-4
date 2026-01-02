@@ -248,9 +248,9 @@ namespace PetCare_WinForm
         private void btnDangXuat_Click(object sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show(
-                "Bác sĩ có chắc chắn muốn đăng xuất không?", 
-                "Xác nhận đăng xuất", 
-                MessageBoxButtons.YesNo, 
+                "Bác sĩ có chắc chắn muốn đăng xuất không?",
+                "Xác nhận đăng xuất",
+                MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
             );
 
