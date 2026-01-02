@@ -242,5 +242,22 @@ namespace PetCare_WinForm
             // Reload lịch hẹn sau khi khám xong
             LoadLichHen();
         }
+
+        // Thêm vào file Lich_Hen.cs
+
+        private void btnDangXuat_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(
+                "Bác sĩ có chắc chắn muốn đăng xuất không?", 
+                "Xác nhận đăng xuất", 
+                MessageBoxButtons.YesNo, 
+                MessageBoxIcon.Question
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                this.Close(); // Đóng Form Bác sĩ -> Code bên FrmLogin sẽ tự chạy tiếp để hiện lại màn hình Đăng nhập
+            }
+        }
     }
 }

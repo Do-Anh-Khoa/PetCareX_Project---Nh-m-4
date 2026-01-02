@@ -289,6 +289,27 @@
             ((System.ComponentModel.ISupportInitialize)dsLich_Hen).EndInit();
             pnlButtons.ResumeLayout(false);
             pnlButtons.PerformLayout();
+
+            // 
+            // btnDangXuat (Cài đặt nút)
+            // 
+            this.btnDangXuat = new System.Windows.Forms.Button();
+            this.btnDangXuat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))); // Neo vào góc dưới phải
+            this.btnDangXuat.BackColor = System.Drawing.Color.LightCoral; // Màu đỏ nhạt cho nổi bật
+            this.btnDangXuat.FlatAppearance.BorderSize = 0;
+            this.btnDangXuat.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDangXuat.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnDangXuat.ForeColor = System.Drawing.Color.White;
+            this.btnDangXuat.Location = new System.Drawing.Point(550, 10); // <-- Sửa số 520 thành 10
+            this.btnDangXuat.Name = "btnDangXuat";
+            this.btnDangXuat.Size = new System.Drawing.Size(120, 40);
+            this.btnDangXuat.TabIndex = 99;
+            this.btnDangXuat.Text = "Đăng Xuất";
+            this.btnDangXuat.UseVisualStyleBackColor = false;
+            this.btnDangXuat.Click += new System.EventHandler(this.btnDangXuat_Click);
+
+            // Dòng quan trọng nhất: Thêm vào pnlButtons
+            this.pnlButtons.Controls.Add(this.btnDangXuat); // <-- Sửa this.Controls thành this.pnlButtons.Controls
             ResumeLayout(false);
         }
 
@@ -312,5 +333,6 @@
         private Button btnXemChiTiet;
         private Button btnRefresh;
         private Label lblTongSo;
+        private System.Windows.Forms.Button btnDangXuat; // <-- Thêm dòng này
     }
 }

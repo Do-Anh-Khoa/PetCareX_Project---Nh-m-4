@@ -27,7 +27,8 @@ namespace PetCare_Web.Controllers
         public async Task<IActionResult> TaoLich([Bind("NgayHen,GioHen,MaBs,MaCn,GhiChu")] LichHen lichHen)
         {
             // CHỐT CỨNG KH1045 ĐỂ KHỚP VỚI TRANG LỊCH SỬ
-            string currentUserId = "KH1045";
+            string currentUserId = HttpContext.Session.GetString("MaKH");
+            if (string.IsNullOrEmpty(currentUserId)) return RedirectToAction("Login", "TaiKhoan");
 
             // Loại bỏ các lỗi validate không cần thiết
             ModelState.Remove("MaLichHen");

@@ -4,20 +4,20 @@
 
 <style>
     .hero-banner {
-        /* Link hình ảnh thú cưng (Bạn có thể thay link khác nếu muốn) */
+        /* Link hình ảnh thú cưng */
         background-image: url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
         background-size: cover;
         background-position: center;
         position: relative;
         color: white;
         border-radius: 15px;
-        overflow: hidden; /* Bo góc cho cả hình nền */
+        overflow: hidden;
     }
 
-    /* Lớp phủ màu đen mờ để chữ nổi bật hơn trên nền hình */
+    /* Lớp phủ màu đen mờ để chữ nổi bật hơn */
     .hero-overlay {
-        background: rgba(0, 0, 0, 0.5); /* Màu đen, độ trong suốt 50% */
-        padding: 4rem 2rem; /* Khoảng cách đệm */
+        background: rgba(0, 0, 0, 0.5);
+        padding: 4rem 2rem;
         width: 100%;
         height: 100%;
     }
@@ -27,7 +27,7 @@
     }
 
         .service-card:hover {
-            transform: translateY(-5px); /* Hiệu ứng nổi lên khi di chuột */
+            transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
         }
 </style>
@@ -40,6 +40,11 @@
                 Hệ thống chăm sóc thú cưng chuẩn quốc tế. <br>
                 Nơi gửi gắm yêu thương và sức khỏe cho người bạn bốn chân của bạn.
             </p>
+
+            <div class="mt-4">
+                <a asp-controller="DatLich" asp-action="Index" class="btn btn-light btn-lg px-4 gap-3 fw-bold text-primary">📅 Đặt Lịch Ngay</a>
+                <a asp-controller="SanPham" asp-action="Index" class="btn btn-outline-light btn-lg px-4 fw-bold">🛒 Mua Sắm</a>
+            </div>
         </div>
     </div>
 
@@ -49,14 +54,17 @@
                  style="background: linear-gradient(135deg, #343a40 0%, #212529 100%);">
                 <h2>🏥 Dịch Vụ Khám Chữa Bệnh</h2>
                 <p class="mt-2">Đội ngũ bác sĩ chuyên nghiệp, tận tâm với trang thiết bị hiện đại nhất. Đặt lịch ngay để không phải chờ đợi.</p>
-                <a href="/DatLich" class="btn btn-outline-light mt-3 px-4">📅 Đặt Lịch Khám</a>
+
+                <a asp-controller="DatLich" asp-action="Index" class="btn btn-outline-light mt-3 px-4">📅 Đặt Lịch Khám</a>
             </div>
         </div>
+
         <div class="col-md-6 mb-3">
             <div class="h-100 p-5 bg-light border rounded-3 shadow-sm service-card">
                 <h2>🦴 Cửa Hàng Phụ Kiện & Thức Ăn</h2>
                 <p class="mt-2">Thiên đường mua sắm cho thú cưng. Thức ăn dinh dưỡng, đồ chơi, phụ kiện chính hãng với giá tốt nhất.</p>
-                <a href="/SanPham" class="btn btn-primary mt-3 px-4">🛒 Đến Cửa Hàng</a>
+
+                <a asp-controller="SanPham" asp-action="Index" class="btn btn-primary mt-3 px-4">🛒 Đến Cửa Hàng</a>
             </div>
         </div>
     </div>

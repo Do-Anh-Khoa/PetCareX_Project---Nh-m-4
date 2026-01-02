@@ -13,7 +13,8 @@ namespace PetCare_WinForm
             ApplicationConfiguration.Initialize();
             // Application.Run(new FormPOS());
            
-            Application.Run(new FrmHome());
+            // Application.Run(new FrmHome());
+            Application.Run(new FrmLogin());
         }
     }
 }

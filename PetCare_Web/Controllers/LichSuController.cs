@@ -17,7 +17,8 @@ namespace PetCare_Web.Controllers
         public async Task<IActionResult> Index()
         {
             // 1. CHỐT CỨNG MÃ KHÁCH HÀNG (Bạn check kỹ xem có đúng KH1045 không nha)
-            string currentUserId = "KH1045";
+            string currentUserId = HttpContext.Session.GetString("MaKH");
+            if (string.IsNullOrEmpty(currentUserId)) return RedirectToAction("Login", "TaiKhoan");
 
             // 2. LẤY LỊCH HẸN (Tạm thời bỏ Include để test xem nó có ra dòng nào không)
             var lichKham = await _context.LichHens

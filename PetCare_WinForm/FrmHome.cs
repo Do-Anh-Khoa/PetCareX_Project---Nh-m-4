@@ -21,6 +21,23 @@ namespace PetCare_WinForm
             InitializeComponent();
         }
 
+// Thêm hàm này vào trong class Dashboard
+
+        private void btnDangXuat_Click(object sender, EventArgs e)
+        {
+            // Hiển thị hộp thoại xác nhận (cho chuyên nghiệp)
+            DialogResult result = MessageBox.Show(
+                "Bạn có chắc chắn muốn đăng xuất không?", 
+                "Xác nhận", 
+                MessageBoxButtons.YesNo, 
+                MessageBoxIcon.Question
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                this.Close(); // Đóng Dashboard -> Code bên FrmLogin sẽ tự chạy tiếp để hiện lại màn hình đăng nhập
+            }
+        }
         /// <summary>
         /// Hàm chung để hiển thị form con vào panel chính
         /// </summary>
