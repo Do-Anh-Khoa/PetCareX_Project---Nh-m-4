@@ -1,4 +1,6 @@
-﻿namespace PetCare_WinForm
+﻿using System.Windows.Forms;
+
+namespace PetCare_WinForm
 {
     partial class TinhLuongNV
     {
@@ -64,6 +66,7 @@
             dateTimePicker_ChonThangNam.Name = "dateTimePicker_ChonThangNam";
             dateTimePicker_ChonThangNam.Size = new Size(274, 27);
             dateTimePicker_ChonThangNam.TabIndex = 5;
+            dateTimePicker_ChonThangNam.ShowUpDown = true;
             // 
             // buttonTinhLuong
             // 

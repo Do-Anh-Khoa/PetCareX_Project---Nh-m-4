@@ -21,7 +21,7 @@
             // Application.Run(new Lich_Hen());
             
             // Test Quản lý
-            // Application.Run(new Dashboard());
+            // Application.Run(new FrmQuanLy());
 
             // Test login
             Application.Run(new FrmLogin());

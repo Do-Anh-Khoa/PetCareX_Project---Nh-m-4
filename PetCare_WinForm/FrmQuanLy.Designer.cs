@@ -30,6 +30,7 @@
         {
             components = new System.ComponentModel.Container();
             PanelMenu = new Panel();
+            button2 = new Button();
             lblClock = new Label();
             button1 = new Button();
             ButtonChamCong = new Button();
@@ -40,7 +41,6 @@
             labelTitle = new Label();
             panelDesktopPane = new Panel();
             timer1 = new System.Windows.Forms.Timer(components);
-            button2 = new Button();
             PanelMenu.SuspendLayout();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
@@ -60,6 +60,21 @@
             PanelMenu.Name = "PanelMenu";
             PanelMenu.Size = new Size(220, 554);
             PanelMenu.TabIndex = 0;
+            // 
+            // button2
+            // 
+            button2.Dock = DockStyle.Top;
+            button2.FlatAppearance.BorderSize = 0;
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.Font = new Font("Segoe UI", 10F);
+            button2.ForeColor = Color.WhiteSmoke;
+            button2.Location = new Point(0, 260);
+            button2.Name = "button2";
+            button2.Size = new Size(220, 60);
+            button2.TabIndex = 7;
+            button2.Text = "Quản lý lương";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // lblClock
             // 
@@ -155,11 +170,12 @@
             labelTitle.Anchor = AnchorStyles.None;
             labelTitle.AutoSize = true;
             labelTitle.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            labelTitle.Location = new Point(311, 22);
+            labelTitle.Location = new Point(145, 23);
             labelTitle.Name = "labelTitle";
-            labelTitle.Size = new Size(179, 38);
+            labelTitle.Size = new Size(474, 38);
             labelTitle.TabIndex = 0;
-            labelTitle.Text = "TRANG CHỦ";
+            labelTitle.Text = "TRANG CHỦ QUẢN LÝ NHÂN VIÊN";
+            labelTitle.TextAlign = ContentAlignment.TopCenter;
             labelTitle.Click += label1_Click;
             // 
             // panelDesktopPane
@@ -176,22 +192,7 @@
             timer1.Interval = 1000;
             timer1.Tick += timer1_Tick;
             // 
-            // button2
-            // 
-            button2.Dock = DockStyle.Top;
-            button2.FlatAppearance.BorderSize = 0;
-            button2.FlatStyle = FlatStyle.Flat;
-            button2.Font = new Font("Segoe UI", 10F);
-            button2.ForeColor = Color.WhiteSmoke;
-            button2.Location = new Point(0, 260);
-            button2.Name = "button2";
-            button2.Size = new Size(220, 60);
-            button2.TabIndex = 7;
-            button2.Text = "Quản lý lương";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
-            // 
-            // Dashboard
+            // FrmQuanLy
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -199,8 +200,8 @@
             Controls.Add(panelDesktopPane);
             Controls.Add(panel2);
             Controls.Add(PanelMenu);
-            Name = "Dashboard";
-            Text = "Dashboard";
+            Name = "FrmQuanLy";
+            Text = "Quản lý nhân viên";
             Load += Dashboard_Load;
             PanelMenu.ResumeLayout(false);
             PanelMenu.PerformLayout();

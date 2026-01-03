@@ -68,6 +68,8 @@ namespace PetCare_WinForm
             childForm.BringToFront();
             childForm.Show();
             labelTitle.Text = childForm.Text;
+            labelTitle.AutoSize = false;
+            labelTitle.TextAlign = ContentAlignment.MiddleCenter;
         }
 
         private void label1_Click(object sender, EventArgs e)

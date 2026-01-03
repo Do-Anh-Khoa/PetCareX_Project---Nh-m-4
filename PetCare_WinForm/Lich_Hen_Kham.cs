@@ -259,5 +259,11 @@ namespace PetCare_WinForm
                 this.Close(); // Đóng Form Bác sĩ -> Code bên FrmLogin sẽ tự chạy tiếp để hiện lại màn hình Đăng nhập
             }
         }
+
+        private void btnChamCong_Click(object sender, EventArgs e)
+        {
+            ChamCongNV frmChamCong = new ChamCongNV();
+            frmChamCong.ShowDialog();
+        }
     }
 }

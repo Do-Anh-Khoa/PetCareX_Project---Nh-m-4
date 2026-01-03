@@ -47,6 +47,7 @@
             btnXemChiTiet = new Button();
             lblTongSo = new Label();
             btnDangXuat = new Button();
+            btnChamCong = new Button();
             pnlHeader.SuspendLayout();
             pnlFilter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dsLich_Hen).BeginInit();
@@ -218,6 +219,7 @@
             // pnlButtons
             // 
             pnlButtons.BackColor = Color.FromArgb(248, 249, 250);
+            pnlButtons.Controls.Add(btnChamCong);
             pnlButtons.Controls.Add(btnKhamBenh);
             pnlButtons.Controls.Add(btnRefresh);
             pnlButtons.Controls.Add(btnXemChiTiet);
@@ -302,6 +304,21 @@
             btnDangXuat.UseVisualStyleBackColor = false;
             btnDangXuat.Click += btnDangXuat_Click;
             // 
+            // btnChamCong
+            // 
+            btnChamCong.BackColor = Color.Gray;
+            btnChamCong.FlatStyle = FlatStyle.Flat;
+            btnChamCong.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnChamCong.ForeColor = SystemColors.ActiveCaptionText;
+            btnChamCong.Location = new Point(533, 14);
+            btnChamCong.Margin = new Padding(3, 4, 3, 4);
+            btnChamCong.Name = "btnChamCong";
+            btnChamCong.Size = new Size(137, 51);
+            btnChamCong.TabIndex = 100;
+            btnChamCong.Text = "Chấm công";
+            btnChamCong.UseVisualStyleBackColor = false;
+            btnChamCong.Click += btnChamCong_Click;
+            // 
             // Lich_Hen
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -348,5 +365,6 @@
         private Button btnRefresh;
         private Label lblTongSo;
         private System.Windows.Forms.Button btnDangXuat; // <-- Thêm dòng này
+        private Button btnChamCong;
     }
 }

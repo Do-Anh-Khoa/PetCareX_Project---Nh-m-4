@@ -20,6 +20,7 @@ namespace PetCare_WinForm
     public partial class ChamCongNV : Form
     {
         private readonly PetCareContext _context = new PetCareContext();
+
         public ChamCongNV()
         {
             InitializeComponent();
