@@ -8,11 +8,11 @@ using PetCare_Web.Models;
 using PetCare_Web.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Microsoft.Data.SqlClient;
+using System.Text.Json;
 
 namespace PetCare_WinForm
 {
-    // tạo lớp ViewModel để hiển thị sản phẩm với tồn kho để đỡ truy xuất kết bảng với cái tồn kho nhiều lần.
-    // này do tui nghĩ là làm tiện hơn nên thêm
     public class ProductViewModel
     {
         public string MaSp { get; set; }
@@ -22,35 +22,27 @@ namespace PetCare_WinForm
         public int TonKho { get; set; }
         public string MaCn { get; set; }
     }
-    // lớp FormPOS
+
     public partial class FormPOS : Form
     {
-        // biến context db: xử lý db
         private PetCareContext dbContext;
-        // bảng hóa đơn tạm thời: lưu trữ các mặt hàng được thêm vào hóa đơn
         private DataTable invoiceTable;
-        // danh sách tất cả sản phẩm(đã được thêm tồn kho cho đỡ truy xuất db nhiều lần)
         private List<ProductViewModel> allProducts;
-        // xác định đơn hàng khách hàng nào đang mua
         private KhachHang selectedCustomer;
-        // xac định nhân viên bán hàng id và name 
         private string selectedEmployeeId;
         private string selectedEmployeeName;
-        // xác định chi nhánh hiện tại
         private string currentMaCn;
-        // xác định phần trăm giảm giá hiện tại
         private decimal discountPercent = 0;
+        private string currentInvoiceId;
 
         public FormPOS()
         {
-            // khởi tạo form như component bên web é
             InitializeComponent();
             dbContext = new PetCareContext();
             InitializeInvoiceTable();
             allProducts = new List<ProductViewModel>();
         }
 
-        // khởi tạo bảng hóa đơn ở mục tạo hóa đơn này mới 
         private void InitializeInvoiceTable()
         {
             invoiceTable = new DataTable();
@@ -62,7 +54,6 @@ namespace PetCare_WinForm
             invoiceTable.Columns.Add("TonKho", typeof(int));
         }
 
-        // cấu hình DataGridView hiển thị hóa đơn. Ae dô chạy sẽ thấy cái bên hóa đơn có hiển thị cái mục sản phẩm thì là cái này 
         private void ConfigureDataGridView()
         {
             dgvInvoice.DataSource = invoiceTable;
@@ -117,7 +108,7 @@ namespace PetCare_WinForm
             dgvInvoice.CellClick += DgvInvoice_CellClick;
             dgvInvoice.CellDoubleClick += DgvInvoice_CellDoubleClick;
         }
-        // load form pos
+
         private void FormPOS_Load(object sender, EventArgs e)
         {
             ConfigureDataGridView();
@@ -125,12 +116,15 @@ namespace PetCare_WinForm
             LoadPaymentMethods();
             UpdateTotalDisplay();
         }
-        // load chi nhánh
+
+        // Sử dụng SP: sp_LoadChiNhanh
         private void LoadChiNhanh()
         {
             try
             {
-                var chiNhanhs = dbContext.ChiNhanhs.ToList();
+                var chiNhanhs = dbContext.ChiNhanhs
+                    .FromSqlRaw("EXEC sp_LoadChiNhanh")
+                    .ToList();
 
                 if (chiNhanhs.Count == 0)
                 {
@@ -167,7 +161,7 @@ namespace PetCare_WinForm
                     "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        // load phương thức thanh toán
+
         private void LoadPaymentMethods()
         {
             cboPaymentMethod.Items.Clear();
@@ -178,7 +172,7 @@ namespace PetCare_WinForm
             if (cboPaymentMethod.Items.Count > 0)
                 cboPaymentMethod.SelectedIndex = 0;
         }
-        //chọn chi nhánh nào thì nó sẽ đưa ra gia trị để mik lưu rồi load sản phẩm theo chi nhánh đó
+
         private void CboChiNhanh_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cboChiNhanh.SelectedValue != null)
@@ -220,7 +214,8 @@ namespace PetCare_WinForm
                 LoadProducts();
             }
         }
-        // load hết product theo chi nhánh
+
+        // Sử dụng SP: sp_LoadProductsByChiNhanh
         private void LoadProducts()
         {
             if (string.IsNullOrEmpty(currentMaCn))
@@ -230,23 +225,36 @@ namespace PetCare_WinForm
 
             try
             {
-                allProducts = dbContext.SanPhams
-                    .Include(sp => sp.TonKhoSanPhams)
-                    .Select(sp => new ProductViewModel
-                    {
-                        MaSp = sp.MaSp,
-                        TenSp = sp.TenSp,
-                        GiaBan = sp.GiaBan ?? 0,
-                        LoaiSp = sp.LoaiSp,
-                        TonKho = sp.TonKhoSanPhams
-                            .Where(tk => tk.MaCn == currentMaCn)
-                            .Sum(tk => tk.SoLuong ?? 0),
-                        MaCn = currentMaCn
-                    })
-                    .ToList();
-                var availableProducts = allProducts.Where(p => p.TonKho > 0).ToList();
+                using (var command = dbContext.Database.GetDbConnection().CreateCommand())
+                {
+                    command.CommandText = "sp_LoadProductsByChiNhanh";
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add(new SqlParameter("@MaCN", currentMaCn));
 
-                if (availableProducts.Count == 0)
+                    dbContext.Database.OpenConnection();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        allProducts.Clear();
+
+                        while (reader.Read())
+                        {
+                            allProducts.Add(new ProductViewModel
+                            {
+                                MaSp = reader["MaSP"].ToString(),
+                                TenSp = reader["TenSP"].ToString(),
+                                GiaBan = Convert.ToDouble(reader["GiaBan"]),
+                                LoaiSp = reader["LoaiSP"].ToString(),
+                                TonKho = Convert.ToInt32(reader["TonKho"]),
+                                MaCn = reader["MaCN"].ToString()
+                            });
+                        }
+                    }
+
+                    dbContext.Database.CloseConnection();
+                }
+
+                if (allProducts.Count == 0)
                 {
                     pnlProducts.Controls.Clear();
                     Label lblEmpty = new Label
@@ -260,7 +268,7 @@ namespace PetCare_WinForm
                     pnlProducts.Controls.Add(lblEmpty);
                     return;
                 }
-                allProducts = availableProducts;
+
                 DisplayProducts(allProducts);
             }
             catch (Exception ex)
@@ -268,8 +276,15 @@ namespace PetCare_WinForm
                 MessageBox.Show($"Lỗi khi load sản phẩm:\n{ex.Message}",
                     "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+                {
+                    dbContext.Database.CloseConnection();
+                }
+            }
         }
-        // hiển thị sản phẩm lên panel sản phẩm
+
         private void DisplayProducts(List<ProductViewModel> products)
         {
             pnlProducts.Controls.Clear();
@@ -294,7 +309,7 @@ namespace PetCare_WinForm
                 pnlProducts.Controls.Add(productCard);
             }
         }
-        // tạo thẻ sản phẩm ở cái bên phải
+
         private Panel CreateProductCard(ProductViewModel product)
         {
             Panel productCard = new Panel
@@ -378,7 +393,7 @@ namespace PetCare_WinForm
 
             return productCard;
         }
-        // thêm sản phẩm bằng click vào thẻ sản phẩm
+
         private void ProductCard_Click(object sender, EventArgs e)
         {
             Control control = sender as Control;
@@ -386,7 +401,7 @@ namespace PetCare_WinForm
             if (product != null)
             {
                 AddToInvoice(product, 1);
-                
+
                 string searchText = txtSearch.Text.ToLower().Trim();
 
                 if (string.IsNullOrEmpty(searchText))
@@ -403,10 +418,9 @@ namespace PetCare_WinForm
 
                     DisplayProducts(filtered);
                 }
-
             }
         }
-        // thêm sp vào hóa đơn này chỉ thêm 1 cái lúc mà mik click vô thẻ sản phẩm
+
         private void AddToInvoice(ProductViewModel product, int quantity)
         {
             if (string.IsNullOrEmpty(currentMaCn))
@@ -458,8 +472,7 @@ namespace PetCare_WinForm
             UpdateProductStock(product.MaSp, -quantity);
             UpdateTotalDisplay();
         }
-        
-        //bấm vào cái ô delete xóa sp khỏi hóa đơn
+
         private void DgvInvoice_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex == dgvInvoice.Columns["Delete"].Index)
@@ -470,7 +483,6 @@ namespace PetCare_WinForm
             }
         }
 
-        // double click vào ô số lượng để sửa số lượng
         private void DgvInvoice_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && e.ColumnIndex != dgvInvoice.Columns["Delete"].Index)
@@ -537,7 +549,7 @@ namespace PetCare_WinForm
                 }
             }
         }
-        // xóa sp khỏi hóa đơn
+
         private void RemoveFromInvoice(string maSp, int quantity)
         {
             var row = invoiceTable.AsEnumerable()
@@ -550,7 +562,7 @@ namespace PetCare_WinForm
                 UpdateTotalDisplay();
             }
         }
-        // cập nhật tồn kho sản phẩm khi thêm hoặc xóa khỏi hóa đơn này chỉ là cập nhật local thoi á
+
         private void UpdateProductStock(string maSp, int quantityChange)
         {
             var product = allProducts.FirstOrDefault(p => p.MaSp == maSp);
@@ -559,7 +571,7 @@ namespace PetCare_WinForm
                 product.TonKho += quantityChange;
             }
         }
-        // cập nhật hiển thị tổng tiền, giảm giá, thành tiền
+
         private void UpdateTotalDisplay()
         {
             try
@@ -595,7 +607,8 @@ namespace PetCare_WinForm
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        // xử lý event click tìm kiếm nv
+
+        // Sử dụng SP: sp_SearchEmployee
         private void BtnSearchEmployee_Click(object sender, EventArgs e)
         {
             string searchText = txtEmployee.Text.Trim();
@@ -615,39 +628,34 @@ namespace PetCare_WinForm
 
             try
             {
-                var employee = dbContext.NhanViens
-                    .Include(nv => nv.MaCnNavigation)
-                    .FirstOrDefault(nv => nv.MaNv == searchText || nv.HoTen.Contains(searchText));
-
-                if (employee == null)
+                using (var command = dbContext.Database.GetDbConnection().CreateCommand())
                 {
-                    MessageBox.Show("Không tìm thấy nhân viên!", "Thông báo",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    ResetEmployeeInfo();
-                    return;
+                    command.CommandText = "sp_SearchEmployee";
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add(new SqlParameter("@SearchText", searchText));
+                    command.Parameters.Add(new SqlParameter("@MaCN", currentMaCn));
+
+                    dbContext.Database.OpenConnection();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            selectedEmployeeId = reader["MaNV"].ToString();
+                            selectedEmployeeName = reader["HoTen"].ToString();
+                            lblEmployeeInfo.Text = $"{selectedEmployeeName} - {selectedEmployeeId}";
+                            lblEmployeeInfo.ForeColor = Color.FromArgb(46, 204, 113);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Không tìm thấy nhân viên hoặc nhân viên không thuộc chi nhánh này!",
+                                "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            ResetEmployeeInfo();
+                        }
+                    }
+
+                    dbContext.Database.CloseConnection();
                 }
-                if (employee.MaCn != currentMaCn)
-                {
-                    string branchName = employee.MaCnNavigation?.TenChiNhanh ?? employee.MaCn;
-                    string currentBranchName = dbContext.ChiNhanhs
-                        .FirstOrDefault(cn => cn.MaCn == currentMaCn)?.TenChiNhanh ?? currentMaCn;
-
-                    MessageBox.Show(
-                        $"Nhân viên '{employee.HoTen}' (Mã: {employee.MaNv}) làm việc tại chi nhánh '{branchName}'.\n\n" +
-                        $"Chi nhánh hiện tại: '{currentBranchName}'.\n\n" +
-                        $"Vui lòng chọn nhân viên thuộc chi nhánh hiện tại hoặc đổi sang chi nhánh '{branchName}'.",
-                        "Nhân viên không hợp lệ",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-
-                    ResetEmployeeInfo();
-                    return;
-                }
-
-                selectedEmployeeId = employee.MaNv;
-                selectedEmployeeName = employee.HoTen;
-                lblEmployeeInfo.Text = $"{employee.HoTen} - {employee.MaNv}";
-                lblEmployeeInfo.ForeColor = Color.FromArgb(46, 204, 113);
             }
             catch (Exception ex)
             {
@@ -655,8 +663,15 @@ namespace PetCare_WinForm
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ResetEmployeeInfo();
             }
+            finally
+            {
+                if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+                {
+                    dbContext.Database.CloseConnection();
+                }
+            }
         }
-        // đặt lại thông tin nhân viên khi tìm không thấy hoặc lỗi hoặc làm xong gòi
+
         private void ResetEmployeeInfo()
         {
             selectedEmployeeId = null;
@@ -664,7 +679,8 @@ namespace PetCare_WinForm
             lblEmployeeInfo.Text = "Chưa chọn nhân viên";
             lblEmployeeInfo.ForeColor = Color.FromArgb(52, 152, 219);
         }
-        // xử lý event click tìm kiếm khách hàng
+
+        // Sử dụng SP: sp_SearchCustomer
         private void BtnSearchCustomer_Click(object sender, EventArgs e)
         {
             string searchText = txtCustomer.Text.Trim();
@@ -677,17 +693,39 @@ namespace PetCare_WinForm
 
             try
             {
-                selectedCustomer = dbContext.KhachHangs
-                    .FirstOrDefault(kh => kh.SoDt == searchText || kh.HoTen.Contains(searchText));
+                using (var command = dbContext.Database.GetDbConnection().CreateCommand())
+                {
+                    command.CommandText = "sp_SearchCustomer";
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add(new SqlParameter("@SearchText", searchText));
 
-                if (selectedCustomer != null)
-                {
-                    UpdateCustomerDisplay();
-                }
-                else
-                {
-                    MessageBox.Show("Không tìm thấy khách hàng!", "Thông báo",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    dbContext.Database.OpenConnection();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            selectedCustomer = new KhachHang
+                            {
+                                MaKh = reader["MaKH"].ToString(),
+                                HoTen = reader["HoTen"].ToString(),
+                                SoDt = reader["SoDT"].ToString(),
+                                Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : "",
+                                GioiTinh = reader["GioiTinh"] != DBNull.Value ? reader["GioiTinh"].ToString() : "",
+                                CapHoiVien = reader["CapHoiVien"].ToString(),
+                                DiemTichLuy = Convert.ToInt32(reader["DiemTichLuy"])
+                            };
+
+                            UpdateCustomerDisplay();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Không tìm thấy khách hàng!", "Thông báo",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+
+                    dbContext.Database.CloseConnection();
                 }
             }
             catch (Exception ex)
@@ -695,8 +733,15 @@ namespace PetCare_WinForm
                 MessageBox.Show($"Lỗi khi tìm khách hàng: {ex.Message}", "Lỗi",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+                {
+                    dbContext.Database.CloseConnection();
+                }
+            }
         }
-        // cập nhật hiển thị thông tin khách hàng
+
         private void UpdateCustomerDisplay()
         {
             if (selectedCustomer == null)
@@ -754,7 +799,8 @@ namespace PetCare_WinForm
 
             UpdateTotalDisplay();
         }
-        // xử lý event click tạo khách hàng mới. này tạo cái form điền dô r nó insert vô bảng khách hàng luôn
+
+        // Sử dụng SP: sp_CreateCustomer
         private void BtnCreateCustomer_Click(object sender, EventArgs e)
         {
             using (var form = new Form())
@@ -767,52 +813,16 @@ namespace PetCare_WinForm
                 form.MaximizeBox = false;
                 form.MinimizeBox = false;
 
-                Label lblName = new Label
-                {
-                    Text = "Họ tên:",
-                    Location = new Point(20, 20),
-                    Width = 80
-                };
-
-                TextBox txtName = new TextBox
-                {
-                    Location = new Point(110, 18),
-                    Width = 250
-                };
-
-                Label lblPhone = new Label
-                {
-                    Text = "Số điện thoại:",
-                    Location = new Point(20, 55),
-                    Width = 90
-                };
-
-                TextBox txtPhone = new TextBox
-                {
-                    Location = new Point(110, 53),
-                    Width = 250
-                };
-
-                Label lblEmail = new Label
-                {
-                    Text = "Email:",
-                    Location = new Point(20, 90),
-                    Width = 80
-                };
-
-                TextBox txtEmail = new TextBox
-                {
-                    Location = new Point(110, 88),
-                    Width = 250
-                };
-
-                Label lblGender = new Label
-                {
-                    Text = "Giới tính:",
-                    Location = new Point(20, 125),
-                    Width = 80
-                };
-
+                Label lblName = new Label { Text = "Họ tên:", Location = new Point(20, 20), Width = 80 };
+                TextBox txtName = new TextBox { Location = new Point(110, 18), Width = 250 };
+                
+                Label lblPhone = new Label { Text = "Số điện thoại:", Location = new Point(20, 55), Width = 90 };
+                TextBox txtPhone = new TextBox { Location = new Point(110, 53), Width = 250 };
+                
+                Label lblEmail = new Label { Text = "Email:", Location = new Point(20, 90), Width = 80 };
+                TextBox txtEmail = new TextBox { Location = new Point(110, 88), Width = 250 };
+                
+                Label lblGender = new Label { Text = "Giới tính:", Location = new Point(20, 125), Width = 80 };
                 ComboBox cboGender = new ComboBox
                 {
                     Location = new Point(110, 123),
@@ -860,36 +870,61 @@ namespace PetCare_WinForm
                     {
                         string newMaKh = "KH" + DateTime.Now.ToString("yyyyMMddHHmmss");
 
-                        var newCustomer = new KhachHang
+                        using (var command = dbContext.Database.GetDbConnection().CreateCommand())
                         {
-                            MaKh = newMaKh,
-                            HoTen = txtName.Text.Trim(),
-                            SoDt = txtPhone.Text.Trim(),
-                            Email = txtEmail.Text.Trim(),
-                            GioiTinh = cboGender.SelectedItem.ToString(),
-                            CapHoiVien = "CoBan",
-                            DiemTichLuy = 0
-                        };
+                            command.CommandText = "sp_CreateCustomer";
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.Add(new SqlParameter("@MaKH", newMaKh));
+                            command.Parameters.Add(new SqlParameter("@HoTen", txtName.Text.Trim()));
+                            command.Parameters.Add(new SqlParameter("@SoDT", txtPhone.Text.Trim()));
+                            command.Parameters.Add(new SqlParameter("@Email", 
+                                string.IsNullOrWhiteSpace(txtEmail.Text) ? "" : txtEmail.Text.Trim()));
+                            command.Parameters.Add(new SqlParameter("@GioiTinh", cboGender.SelectedItem.ToString()));
 
-                        dbContext.KhachHangs.Add(newCustomer);
-                        dbContext.SaveChanges();
+                            dbContext.Database.OpenConnection();
 
-                        selectedCustomer = newCustomer;
-                        txtCustomer.Text = newCustomer.SoDt;
-                        UpdateCustomerDisplay();
+                            using (var reader = command.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    selectedCustomer = new KhachHang
+                                    {
+                                        MaKh = reader["MaKH"].ToString(),
+                                        HoTen = reader["HoTen"].ToString(),
+                                        SoDt = reader["SoDT"].ToString(),
+                                        Email = reader["Email"] != DBNull.Value ? reader["Email"].ToString() : "",
+                                        GioiTinh = reader["GioiTinh"] != DBNull.Value ? reader["GioiTinh"].ToString() : "",
+                                        CapHoiVien = reader["CapHoiVien"].ToString(),
+                                        DiemTichLuy = Convert.ToInt32(reader["DiemTichLuy"])
+                                    };
 
-                        MessageBox.Show("Tạo khách hàng thành công!", "Thông báo",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    txtCustomer.Text = selectedCustomer.SoDt;
+                                    UpdateCustomerDisplay();
+
+                                    MessageBox.Show("Tạo khách hàng thành công!", "Thông báo",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                            }
+
+                            dbContext.Database.CloseConnection();
+                        }
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show($"Lỗi khi tạo khách hàng: {ex.Message}", "Lỗi",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                    finally
+                    {
+                        if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+                        {
+                            dbContext.Database.CloseConnection();
+                        }
+                    }
                 }
             }
         }
-        // xử lý event text changed tìm kiếm sản phẩm. kiểu là nhập vào text nó change là danh sách sản phẩm nó cx change
+
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
             string searchText = txtSearch.Text.ToLower().Trim();
@@ -909,12 +944,12 @@ namespace PetCare_WinForm
                 DisplayProducts(filtered);
             }
         }
-        // xử lý event click nút tìm kiếm sản phẩm
+
         private void BtnSearch_Click(object sender, EventArgs e)
         {
             TxtSearch_TextChanged(sender, e);
         }
-        // xử lý event click nút xóa toàn bộ hóa đơn
+
         private void BtnClearInvoice_Click(object sender, EventArgs e)
         {
             if (invoiceTable.Rows.Count == 0)
@@ -938,7 +973,8 @@ namespace PetCare_WinForm
                 UpdateCustomerDisplay();
             }
         }
-        // xử lý event click nút tạo hóa đơn
+
+        // Sử dụng SP: sp_CreateInvoice
         private void BtnCreateInvoice_Click(object sender, EventArgs e)
         {
             if (invoiceTable.Rows.Count == 0)
@@ -955,6 +991,13 @@ namespace PetCare_WinForm
                 return;
             }
 
+            if (selectedCustomer == null)
+            {
+                MessageBox.Show("Vui lòng chọn khách hàng trước khi tạo hóa đơn!", "Thông báo",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (string.IsNullOrEmpty(currentMaCn))
             {
                 MessageBox.Show("Vui lòng chọn chi nhánh!", "Thông báo",
@@ -964,139 +1007,171 @@ namespace PetCare_WinForm
 
             try
             {
-                using (var transaction = dbContext.Database.BeginTransaction())
+                string maHd = "HD" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                string maMuaHang = "MH" + DateTime.Now.ToString("yyyyMMddHHmmss");
+
+                decimal subtotal = 0;
+                foreach (DataRow row in invoiceTable.Rows)
                 {
-                    try
+                    subtotal += row.Field<decimal>("ThanhTien");
+                }
+
+                decimal discount = subtotal * discountPercent / 100;
+                decimal tongTien = subtotal - discount;
+
+                // Tạo JSON cho chi tiết hóa đơn
+                var invoiceDetails = new List<object>();
+                foreach (DataRow row in invoiceTable.Rows)
+                {
+                    invoiceDetails.Add(new
                     {
-                        string maHd = "HD" + DateTime.Now.ToString("yyyyMMddHHmmss");
-                        string maMuaHang = "MH" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                        MaSP = row.Field<string>("MaSP"),
+                        SoLuong = row.Field<int>("SoLuong"),
+                        DonGia = row.Field<decimal>("DonGia")
+                    });
+                }
 
-                        decimal subtotal = 0;
-                        foreach (DataRow row in invoiceTable.Rows)
+                string jsonDetails = JsonSerializer.Serialize(invoiceDetails);
+
+                using (var command = dbContext.Database.GetDbConnection().CreateCommand())
+                {
+                    command.CommandText = "sp_CreateInvoice";
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add(new SqlParameter("@MaHD", maHd));
+                    command.Parameters.Add(new SqlParameter("@NgayLap", DateTime.Now.Date));
+                    command.Parameters.Add(new SqlParameter("@TongTien", tongTien));
+                    command.Parameters.Add(new SqlParameter("@KhuyenMai", discountPercent.ToString("0")));
+                    command.Parameters.Add(new SqlParameter("@HinhThucThanhToan", cboPaymentMethod.SelectedItem?.ToString() ?? "TienMat"));
+                    command.Parameters.Add(new SqlParameter("@MaNV", selectedEmployeeId));
+                    command.Parameters.Add(new SqlParameter("@MaKH", selectedCustomer.MaKh));
+                    command.Parameters.Add(new SqlParameter("@MaCN", currentMaCn));
+                    command.Parameters.Add(new SqlParameter("@MaMuaHang", maMuaHang));
+                    command.Parameters.Add(new SqlParameter("@InvoiceDetails", jsonDetails));
+
+                    dbContext.Database.OpenConnection();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read() && reader["Status"].ToString() == "SUCCESS")
                         {
-                            subtotal += row.Field<decimal>("ThanhTien");
+                            currentInvoiceId = maHd;
+
+                            string message = GenerateInvoiceText(maHd, subtotal, discount, tongTien);
+                            MessageBox.Show(message, "Hóa Đơn Thành Công",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            ClearForm();
+                            LoadProducts();
+                        }
+                    }
+
+                    dbContext.Database.CloseConnection();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tạo hóa đơn:\n{ex.Message}",
+                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+                {
+                    dbContext.Database.CloseConnection();
+                }
+            }
+        }
+
+        // Sử dụng SP: sp_PayInvoice
+        private void BtnPayInvoice_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(currentInvoiceId))
+            {
+                MessageBox.Show("Không có hóa đơn nào để thanh toán!\nVui lòng tạo hóa đơn trước.",
+                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                var hoaDon = dbContext.HoaDons.FirstOrDefault(hd => hd.MaHd == currentInvoiceId);
+
+                if (hoaDon == null)
+                {
+                    MessageBox.Show("Không tìm thấy hóa đơn trong hệ thống!",
+                        "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (hoaDon.TrangThai == "DaThanhToan")
+                {
+                    MessageBox.Show("Hóa đơn này đã được thanh toán rồi!",
+                        "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var result = MessageBox.Show(
+                    $"Xác nhận thanh toán hóa đơn {currentInvoiceId}?\n\n" +
+                    $"Số tiền: {hoaDon.TongTien:N0}đ\n" +
+                    $"Hình thức: {hoaDon.HinhThucThanhToan}",
+                    "Xác nhận thanh toán",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    using (var command = dbContext.Database.GetDbConnection().CreateCommand())
+                    {
+                        command.CommandText = "sp_PayInvoice";
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add(new SqlParameter("@MaHD", currentInvoiceId));
+                        command.Parameters.Add(new SqlParameter("@MaKH",
+                            selectedCustomer?.MaKh ?? (object)DBNull.Value));
+
+                        dbContext.Database.OpenConnection();
+
+                        command.ExecuteNonQuery();
+
+                        string successMessage = "═══════════════════════════════════════\n";
+                        successMessage += "       THANH TOÁN THÀNH CÔNG!\n";
+                        successMessage += "═══════════════════════════════════════\n";
+                        successMessage += $"Mã HĐ: {currentInvoiceId}\n";
+                        successMessage += $"Số tiền: {hoaDon.TongTien:N0}đ\n";
+                        successMessage += $"Hình thức: {hoaDon.HinhThucThanhToan}\n";
+                        successMessage += $"Ngày thanh toán: {DateTime.Now:dd/MM/yyyy HH:mm:ss}\n";
+
+                        if (selectedCustomer != null)
+                        {
+                            successMessage += $"\nKhách hàng: {selectedCustomer.HoTen}\n";
                         }
 
-                        decimal discount = subtotal * discountPercent / 100;
-                        decimal tongTien = subtotal - discount;
+                        successMessage += "═══════════════════════════════════════\n";
+                        successMessage += "\nCảm ơn quý khách! Hẹn gặp lại!";
 
-                        var hoaDon = new HoaDon
-                        {
-                            MaHd = maHd,
-                            NgayLap = DateOnly.FromDateTime(DateTime.Now),
-                            TongTien = tongTien,
-                            KhuyenMai = discountPercent.ToString("0"),
-                            HinhThucThanhToan = cboPaymentMethod.SelectedItem?.ToString() ?? "TienMat",
-                            TrangThai = "ChuaThanhToan",
-                            MaNv = selectedEmployeeId,
-                            MaKh = selectedCustomer?.MaKh,
-                            MaCn = currentMaCn
-                        };
-                        if(hoaDon.MaKh == null)
-                        {
-                            MessageBox.Show("Vui lòng chọn khách hàng trước khi tạo hóa đơn!", "Thông báo",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
-                        }
-
-                        dbContext.HoaDons.Add(hoaDon);
-                        dbContext.SaveChanges();
-                        var dichVu = new DichVu
-                        {
-                            MaDv = maMuaHang,
-                            MaTc = null,
-                            MaCn = hoaDon.MaCn
-                        };
-                        dbContext.DichVus.Add(dichVu);
-                        dbContext.SaveChanges();
-                        
-                        var dvMuaHang = new DvMuaHang
-                        {
-                            MaMuaHang = maMuaHang,
-                            NhanVienBanHang = selectedEmployeeId
-                        };
-                        dbContext.DvMuaHangs.Add(dvMuaHang);
-                        dbContext.SaveChanges();
-
-                        var chiTietDvSp = new ChiTietDvSd
-                        {
-                            MaDv = maMuaHang,
-                            MaHd = maHd
-                        };
-                        dbContext.SaveChanges();
-
-                        foreach (DataRow row in invoiceTable.Rows)
-                        {
-                            string maSp = row.Field<string>("MaSP");
-                            int soLuong = row.Field<int>("SoLuong");
-                            decimal donGia = row.Field<decimal>("DonGia");
-
-                            var chiTiet = new ChiTietMuaHang
-                            {
-                                MaMuaHang = maMuaHang,
-                                MaSp = maSp,
-                                SoLuong = soLuong,
-                                DonGia = (double)donGia
-                            };
-                            dbContext.ChiTietMuaHangs.Add(chiTiet);
-                            dbContext.SaveChanges();
-
-                            var tonKho = dbContext.TonKhoSanPhams
-                                .FirstOrDefault(tk => tk.MaSp == maSp && tk.MaCn == currentMaCn);
-
-                            if (tonKho != null)
-                            {
-                                tonKho.SoLuong = (tonKho.SoLuong ?? 0) - soLuong;
-
-                                if (tonKho.SoLuong < 0)
-                                {
-                                    throw new Exception($"Không đủ tồn kho cho sản phẩm {maSp}");
-                                }
-                            }
-                            else
-                            {
-                                throw new Exception($"Không tìm thấy tồn kho cho sản phẩm {maSp} tại chi nhánh {currentMaCn}");
-                            }
-                        }
-
-                        dbContext.SaveChanges();
-                        transaction.Commit();
-
-                        string message = GenerateInvoiceText(maHd, subtotal, discount, tongTien);
-                        MessageBox.Show(message, "Hóa Đơn Thành Công",
+                        MessageBox.Show(successMessage, "Thanh Toán Thành Công",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         ClearForm();
-                        LoadProducts();
-                    }
-                    catch (DbUpdateException ex)
-                    {
-                        string msg = ex.InnerException?.InnerException?.Message
-                                  ?? ex.InnerException?.Message
-                                  ?? ex.Message;
+                        currentInvoiceId = null;
 
-                        MessageBox.Show(msg, "Lỗi lưu DB");
-
-                        Debug.WriteLine("=== DB UPDATE ERROR ===");
-                        Debug.WriteLine(msg);
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        throw new Exception($"Lỗi khi lưu hóa đơn: {ex.Message}", ex);
+                        dbContext.Database.CloseConnection();
                     }
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("=== SAVE ERROR ===");
-                Debug.WriteLine(ex.ToString());
-                MessageBox.Show($"Lỗi khi tạo hóa đơn:\n{ex.Message}\n\nChi tiết:\n{ex.InnerException?.Message}",
+                MessageBox.Show($"Lỗi khi thanh toán hóa đơn:\n{ex.Message}",
                     "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
+            }
+            finally
+            {
+                if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+                {
+                    dbContext.Database.CloseConnection();
+                }
             }
         }
-        // tạo hóa đơn để hiển thị khi tạo ok
+
         private string GenerateInvoiceText(string maHd, decimal subtotal, decimal discount, decimal tongTien)
         {
             string invoice = "═══════════════════════════════════════\n";
@@ -1110,14 +1185,15 @@ namespace PetCare_WinForm
             if (selectedCustomer != null)
             {
                 var rank = selectedCustomer.CapHoiVien;
-                if(rank == "VIP")
+                if (rank == "VIP")
                 {
                     rank = "VIP";
                 }
-                else if(rank == "ThanThiet")
+                else if (rank == "ThanThiet")
                 {
                     rank = "Thân thiết";
-                }else
+                }
+                else
                 {
                     rank = "Cơ bản";
                 }
@@ -1150,7 +1226,7 @@ namespace PetCare_WinForm
 
             return invoice;
         }
-        // reset form để thêm thông tin hóa đơn mới
+
         private void ClearForm()
         {
             invoiceTable.Clear();

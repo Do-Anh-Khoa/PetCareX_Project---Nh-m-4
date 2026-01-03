@@ -9,8 +9,6 @@ public partial class ChiTietDvSd
 
     public string MaDv { get; set; } = null!;
 
-    public string? GhiChu { get; set; }
-
     public virtual DichVu MaDvNavigation { get; set; } = null!;
 
     public virtual HoaDon MaHdNavigation { get; set; } = null!;

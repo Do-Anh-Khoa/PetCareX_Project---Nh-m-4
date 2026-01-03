@@ -5,6 +5,98 @@ using PetCare_Web.Models;
 
 namespace PetCare_Web.Data;
 
+// 1. ProductViewModel - Dùng cho sp_LoadProductsByChiNhanh
+public class ProductViewModel
+{
+    public string MaSp { get; set; }
+    public string TenSp { get; set; }
+    public double GiaBan { get; set; }
+    public string LoaiSp { get; set; }
+    public int TonKho { get; set; }
+    public string MaCn { get; set; }
+}
+
+// 2. NhanVienSearchResult - Dùng cho sp_SearchEmployee
+public class NhanVienSearchResult
+{
+    public string MaNv { get; set; }
+    public string HoTen { get; set; }
+    public string MaCn { get; set; }
+    public string TenChiNhanh { get; set; }
+}
+
+// 3. InvoiceCreateResult - Dùng cho sp_CreateInvoice
+public class InvoiceCreateResult
+{
+    public string Status { get; set; }
+    public string MaHd { get; set; }
+}
+
+// 4. PaymentResult - Dùng cho sp_PayInvoice
+public class PaymentResult
+{
+    public string Status { get; set; }
+    public int? PointsEarned { get; set; }
+    public int? TotalPoints { get; set; }
+    public string NewRank { get; set; }
+}
+
+public class HoaDonSearchResult
+{
+    public string MaHd { get; set; }
+    public DateOnly? NgayLap { get; set; }
+    public string TrangThai { get; set; }
+    public decimal? TongTien { get; set; }
+    public string KhuyenMai { get; set; }
+    public string HinhThucThanhToan { get; set; }
+    public string MaKh { get; set; }
+    public string MaNv { get; set; }
+    public string MaCn { get; set; }
+}
+
+public class KhachHangInfo
+{
+    public string MaKh { get; set; }
+    public string HoTen { get; set; }
+    public string SoDt { get; set; }
+    public string CapHoiVien { get; set; }
+}
+
+public class NhanVienInfo
+{
+    public string MaNv { get; set; }
+    public string HoTen { get; set; }
+}
+
+public class ChiNhanhInfo
+{
+    public string MaCn { get; set; }
+    public string TenChiNhanh { get; set; }
+}
+
+public class SanPhamInfo
+{
+    public string TenSp { get; set; }
+    public int SoLuong { get; set; }
+    public double DonGia { get; set; }
+    public double ThanhTien { get; set; }
+}
+
+public class HoaDonDetailResult
+{
+    public string MaHd { get; set; }
+    public DateOnly? NgayLap { get; set; }
+    public string TrangThai { get; set; }
+    public decimal? TongTien { get; set; }
+    public string KhuyenMai { get; set; }
+    public string HinhThucThanhToan { get; set; }
+    public string TenKh { get; set; }
+    public string SoDt { get; set; }
+    public string CapHoiVien { get; set; }
+    public string TenNv { get; set; }
+    public string TenCn { get; set; }
+}
+
 public partial class PetCareContext : DbContext
 {
     public PetCareContext()
@@ -70,9 +162,22 @@ public partial class PetCareContext : DbContext
 
     public virtual DbSet<Vaccine> Vaccines { get; set; }
 
+    public virtual DbSet<ProductViewModel> ProductViewModels { get; set; }
+    public virtual DbSet<NhanVienSearchResult> NhanVienSearchResults { get; set; }
+    public virtual DbSet<InvoiceCreateResult> InvoiceCreateResults { get; set; }
+    public virtual DbSet<PaymentResult> PaymentResults { get; set; }
+
+    public virtual DbSet<HoaDonSearchResult> HoaDonSearchResults { get; set; }
+    public virtual DbSet<KhachHangInfo> KhachHangInfos { get; set; }
+    public virtual DbSet<NhanVienInfo> NhanVienInfos { get; set; }
+    public virtual DbSet<ChiNhanhInfo> ChiNhanhInfos { get; set; }
+    public virtual DbSet<SanPhamInfo> SanPhamInfos { get; set; }
+    public virtual DbSet<HoaDonDetailResult> HoaDonDetailResults { get; set; }
+
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=LAPTOP-ORDALAOG\\SQLEXPRESS;Initial Catalog=PetCareX_DB;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;");
+         => optionsBuilder.UseSqlServer("Server=ADMIN-PC\\SQLEXPRESS01;Database=PetCareX;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -211,7 +316,6 @@ public partial class PetCareContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("MaDV");
-            entity.Property(e => e.GhiChu).HasMaxLength(100);
 
             entity.HasOne(d => d.MaDvNavigation).WithMany(p => p.ChiTietDvSds)
                 .HasForeignKey(d => d.MaDv)
@@ -766,6 +870,17 @@ public partial class PetCareContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("TenVC");
         });
+
+        modelBuilder.Entity<ProductViewModel>().HasNoKey().ToView(null);
+        modelBuilder.Entity<NhanVienSearchResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<InvoiceCreateResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<PaymentResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<HoaDonSearchResult>().HasNoKey().ToView(null);
+        modelBuilder.Entity<KhachHangInfo>().HasNoKey().ToView(null);
+        modelBuilder.Entity<NhanVienInfo>().HasNoKey().ToView(null);
+        modelBuilder.Entity<ChiNhanhInfo>().HasNoKey().ToView(null);
+        modelBuilder.Entity<SanPhamInfo>().HasNoKey().ToView(null);
+        modelBuilder.Entity<HoaDonDetailResult>().HasNoKey().ToView(null);
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -42,6 +42,7 @@ namespace PetCare_WinForm
         private Label lblPayment;
         private Button btnCreateInvoice;
         private Button btnClearInvoice;
+        private Button btnPayInvoice;
 
         protected override void Dispose(bool disposing)
         {
@@ -88,6 +89,8 @@ namespace PetCare_WinForm
             this.lblPayment = new Label();
             this.btnCreateInvoice = new Button();
             this.btnClearInvoice = new Button();
+            this.btnPayInvoice = new Button();
+
 
             this.mainLayout.SuspendLayout();
             this.leftPanel.SuspendLayout();
@@ -321,6 +324,8 @@ namespace PetCare_WinForm
             this.bottomPanel.Controls.Add(this.lblSubTotal);
             this.bottomPanel.Controls.Add(this.cboPaymentMethod);
             this.bottomPanel.Controls.Add(this.lblPayment);
+            this.bottomPanel.Controls.Add(this.btnPayInvoice);
+
             this.bottomPanel.Dock = DockStyle.Bottom;
             this.bottomPanel.Height = 210;
             this.bottomPanel.Padding = new Padding(0, 10, 0, 0);
@@ -370,7 +375,7 @@ namespace PetCare_WinForm
             this.btnClearInvoice.Font = new Font("Segoe UI", 10F);
             this.btnClearInvoice.ForeColor = Color.White;
             this.btnClearInvoice.Location = new Point(0, 160);
-            this.btnClearInvoice.Size = new Size(175, 35);
+            this.btnClearInvoice.Size = new Size(110, 35);
             this.btnClearInvoice.Text = "XÓA HÓA ĐƠN";
             this.btnClearInvoice.Click += new EventHandler(this.BtnClearInvoice_Click);
 
@@ -380,10 +385,21 @@ namespace PetCare_WinForm
             this.btnCreateInvoice.FlatStyle = FlatStyle.Flat;
             this.btnCreateInvoice.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             this.btnCreateInvoice.ForeColor = Color.White;
-            this.btnCreateInvoice.Location = new Point(183, 160);
-            this.btnCreateInvoice.Size = new Size(175, 35);
+            this.btnCreateInvoice.Location = new Point(115, 160);
+            this.btnCreateInvoice.Size = new Size(115, 35);
             this.btnCreateInvoice.Text = "TẠO HÓA ĐƠN";
             this.btnCreateInvoice.Click += new EventHandler(this.BtnCreateInvoice_Click);
+
+            this.btnPayInvoice.BackColor = Color.FromArgb(52, 152, 219);
+            this.btnPayInvoice.Cursor = Cursors.Hand;
+            this.btnPayInvoice.FlatAppearance.BorderSize = 0;
+            this.btnPayInvoice.FlatStyle = FlatStyle.Flat;
+            this.btnPayInvoice.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            this.btnPayInvoice.ForeColor = Color.White;
+            this.btnPayInvoice.Location = new Point(235, 160);
+            this.btnPayInvoice.Size = new Size(110, 35);
+            this.btnPayInvoice.Text = "THANH TOÁN";
+            this.btnPayInvoice.Click += new EventHandler(this.BtnPayInvoice_Click);
 
             // Form
             this.AutoScaleDimensions = new SizeF(6F, 13F);
