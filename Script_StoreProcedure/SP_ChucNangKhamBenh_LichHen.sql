@@ -19,7 +19,7 @@ BEGIN
     JOIN KHACH_HANG k ON l.MaKH = k.MaKH
     JOIN NHAN_VIEN nv ON l.MaBS = nv.MaNV
     JOIN CHI_NHANH cn ON l.MaCN = cn.MaCN
-    WHERE l.TrangThai = 'DaXacNhan' OR l.TrangThai IS NULL OR l.TrangThai = ''
+    WHERE l.TrangThai = 'ChoXacNhan' OR l.TrangThai IS NULL OR l.TrangThai = ''
 END
 GO
 
