@@ -13,6 +13,7 @@ namespace PetCare_WinForm
         private FormPOS _frmPOS;
         private FormThanhToan _frmThanhToan;
         private FrmBaoCao _frmBaoCao;
+        private ChamCongNV ChamCongNV;
 
         private Form _currentForm; // Form đang hiển thị
 
@@ -21,15 +22,15 @@ namespace PetCare_WinForm
             InitializeComponent();
         }
 
-// Thêm hàm này vào trong class Dashboard
+        // Thêm hàm này vào trong class Dashboard
 
         private void btnDangXuat_Click(object sender, EventArgs e)
         {
             // Hiển thị hộp thoại xác nhận (cho chuyên nghiệp)
             DialogResult result = MessageBox.Show(
-                "Bạn có chắc chắn muốn đăng xuất không?", 
-                "Xác nhận", 
-                MessageBoxButtons.YesNo, 
+                "Bạn có chắc chắn muốn đăng xuất không?",
+                "Xác nhận",
+                MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
             );
 
@@ -59,7 +60,7 @@ namespace PetCare_WinForm
             childForm.TopLevel = false;
             childForm.FormBorderStyle = FormBorderStyle.None;
             childForm.Dock = DockStyle.Fill;
-            
+
             // Nếu chưa add vào panel thì add vào
             if (!pnlContent.Controls.Contains(childForm))
             {
@@ -71,7 +72,7 @@ namespace PetCare_WinForm
             {
                 childForm.Show(); // Chỉ hiển thị lại
             }
-            
+
             childForm.BringToFront();
             lblWelcome.Visible = false; // Ẩn lời chào
         }
@@ -119,6 +120,15 @@ namespace PetCare_WinForm
                 _frmBaoCao = new FrmBaoCao();
             }
             ShowChildForm(_frmBaoCao);
+        }
+
+        private void btnChamCong_Click(object sender, EventArgs e)
+        {
+            if (ChamCongNV == null || ChamCongNV.IsDisposed)
+            {
+                ChamCongNV = new ChamCongNV();
+            }
+            ShowChildForm(ChamCongNV);
         }
     }
 }

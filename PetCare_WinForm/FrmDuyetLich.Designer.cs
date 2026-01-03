@@ -34,6 +34,9 @@
             btnRefresh = new Button();
             lblTitle = new Label();
             groupBoxTaoLich = new GroupBox();
+            lblLoaiPetMoi = new Label();
+            txtTenPetMoi = new TextBox();
+            txtLoaiPetMoi = new TextBox();
             cmbThuCung = new ComboBox();
             lblThuCung = new Label();
             btnTimKiem = new Button();
@@ -69,7 +72,7 @@
             dgvLichHen.ReadOnly = true;
             dgvLichHen.RowHeadersWidth = 51;
             dgvLichHen.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvLichHen.Size = new Size(760, 250);
+            dgvLichHen.Size = new Size(779, 250);
             dgvLichHen.TabIndex = 1;
             // 
             // btnDuyet
@@ -103,7 +106,7 @@
             btnRefresh.BackColor = Color.Orange;
             btnRefresh.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnRefresh.ForeColor = Color.White;
-            btnRefresh.Location = new Point(652, 310);
+            btnRefresh.Location = new Point(671, 310);
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new Size(120, 40);
             btnRefresh.TabIndex = 4;
@@ -124,6 +127,9 @@
             // 
             // groupBoxTaoLich
             // 
+            groupBoxTaoLich.Controls.Add(lblLoaiPetMoi);
+            groupBoxTaoLich.Controls.Add(txtTenPetMoi);
+            groupBoxTaoLich.Controls.Add(txtLoaiPetMoi);
             groupBoxTaoLich.Controls.Add(cmbThuCung);
             groupBoxTaoLich.Controls.Add(lblThuCung);
             groupBoxTaoLich.Controls.Add(btnTimKiem);
@@ -147,21 +153,52 @@
             groupBoxTaoLich.ForeColor = Color.DarkBlue;
             groupBoxTaoLich.Location = new Point(12, 360);
             groupBoxTaoLich.Name = "groupBoxTaoLich";
-            groupBoxTaoLich.Size = new Size(760, 246);
+            groupBoxTaoLich.Size = new Size(790, 246);
             groupBoxTaoLich.TabIndex = 5;
             groupBoxTaoLich.TabStop = false;
             groupBoxTaoLich.Text = "TẠO LỊCH KHÁM CHO KHÁCH";
             groupBoxTaoLich.Visible = false;
             groupBoxTaoLich.Enter += groupBoxTaoLich_Enter;
             // 
+            // lblLoaiPetMoi
+            // 
+            lblLoaiPetMoi.AutoSize = true;
+            lblLoaiPetMoi.Font = new Font("Segoe UI", 9F);
+            lblLoaiPetMoi.ForeColor = Color.Black;
+            lblLoaiPetMoi.Location = new Point(570, 75);
+            lblLoaiPetMoi.Name = "lblLoaiPetMoi";
+            lblLoaiPetMoi.Size = new Size(83, 15);
+            lblLoaiPetMoi.TabIndex = 19;
+            lblLoaiPetMoi.Text = "Loại thú cưng:";
+            lblLoaiPetMoi.Visible = false;
+            // 
+            // txtTenPetMoi
+            // 
+            txtTenPetMoi.Font = new Font("Segoe UI", 9F);
+            txtTenPetMoi.Location = new Point(411, 70);
+            txtTenPetMoi.Name = "txtTenPetMoi";
+            txtTenPetMoi.Size = new Size(153, 23);
+            txtTenPetMoi.TabIndex = 18;
+            txtTenPetMoi.Visible = false;
+            // 
+            // txtLoaiPetMoi
+            // 
+            txtLoaiPetMoi.Font = new Font("Segoe UI", 9F);
+            txtLoaiPetMoi.Location = new Point(659, 70);
+            txtLoaiPetMoi.Name = "txtLoaiPetMoi";
+            txtLoaiPetMoi.Size = new Size(112, 23);
+            txtLoaiPetMoi.TabIndex = 17;
+            txtLoaiPetMoi.Visible = false;
+            // 
             // cmbThuCung
             // 
             cmbThuCung.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbThuCung.Enabled = false;
             cmbThuCung.Font = new Font("Segoe UI", 10F);
             cmbThuCung.FormattingEnabled = true;
             cmbThuCung.Location = new Point(411, 70);
             cmbThuCung.Name = "cmbThuCung";
-            cmbThuCung.Size = new Size(191, 25);
+            cmbThuCung.Size = new Size(153, 25);
             cmbThuCung.TabIndex = 16;
             // 
             // lblThuCung
@@ -332,7 +369,7 @@
             btnLuuLichMoi.BackColor = Color.LimeGreen;
             btnLuuLichMoi.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnLuuLichMoi.ForeColor = Color.White;
-            btnLuuLichMoi.Location = new Point(493, 198);
+            btnLuuLichMoi.Location = new Point(533, 198);
             btnLuuLichMoi.Name = "btnLuuLichMoi";
             btnLuuLichMoi.Size = new Size(120, 35);
             btnLuuLichMoi.TabIndex = 6;
@@ -345,7 +382,7 @@
             btnHuy.BackColor = Color.Gray;
             btnHuy.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnHuy.ForeColor = Color.White;
-            btnHuy.Location = new Point(623, 198);
+            btnHuy.Location = new Point(659, 198);
             btnHuy.Name = "btnHuy";
             btnHuy.Size = new Size(120, 35);
             btnHuy.TabIndex = 7;
@@ -357,7 +394,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(784, 618);
+            ClientSize = new Size(814, 618);
             Controls.Add(lblTitle);
             Controls.Add(dgvLichHen);
             Controls.Add(btnDuyet);
@@ -402,5 +439,8 @@
         private Button btnTimKiem;
         private Label lblThuCung;
         private ComboBox cmbThuCung;
+        private TextBox txtTenPetMoi;
+        private TextBox txtLoaiPetMoi;
+        private Label lblLoaiPetMoi;
     }
 }

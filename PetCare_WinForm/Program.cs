@@ -1,4 +1,4 @@
-namespace PetCare_WinForm
+﻿namespace PetCare_WinForm
 {
     internal static class Program
     {
@@ -11,9 +11,19 @@ namespace PetCare_WinForm
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+
             // Application.Run(new FormPOS());
-           
+
+            // Test nhân viên
             // Application.Run(new FrmHome());
+
+            // Test Bác sĩ
+            // Application.Run(new Lich_Hen());
+            
+            // Test Quản lý
+            // Application.Run(new FrmQuanLy());
+
+            // Test login
             Application.Run(new FrmLogin());
         }
     }

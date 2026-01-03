@@ -70,7 +70,7 @@
             lblTitle.ForeColor = Color.White;
             lblTitle.Location = new Point(20, 10);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(350, 32);
+            lblTitle.Size = new Size(316, 32);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "QUẢN LÝ LỊCH HẸN KHÁM";
             // 
@@ -81,7 +81,7 @@
             lblSubTitle.ForeColor = Color.White;
             lblSubTitle.Location = new Point(22, 45);
             lblSubTitle.Name = "lblSubTitle";
-            lblSubTitle.Size = new Size(280, 19);
+            lblSubTitle.Size = new Size(286, 19);
             lblSubTitle.TabIndex = 1;
             lblSubTitle.Text = "Xem và quản lý lịch hẹn khám bệnh thú cưng";
             // 
@@ -108,7 +108,8 @@
             lblLocTheo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblLocTheo.Location = new Point(20, 16);
             lblLocTheo.Name = "lblLocTheo";
-            lblLocTheo.Size = new Size(70, 15);
+            lblLocTheo.Size = new Size(65, 15);
+            lblLocTheo.TabIndex = 0;
             lblLocTheo.Text = "Trạng thái:";
             // 
             // cmbLocTrangThai
@@ -126,7 +127,8 @@
             lblTuNgay.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblTuNgay.Location = new Point(260, 16);
             lblTuNgay.Name = "lblTuNgay";
-            lblTuNgay.Size = new Size(55, 15);
+            lblTuNgay.Size = new Size(54, 15);
+            lblTuNgay.TabIndex = 1;
             lblTuNgay.Text = "Từ ngày:";
             // 
             // dtpTuNgay
@@ -145,6 +147,7 @@
             lblDenNgay.Location = new Point(450, 16);
             lblDenNgay.Name = "lblDenNgay";
             lblDenNgay.Size = new Size(62, 15);
+            lblDenNgay.TabIndex = 2;
             lblDenNgay.Text = "Đến ngày:";
             // 
             // dtpDenNgay
@@ -228,20 +231,7 @@
             btnKhamBenh.TabIndex = 0;
             btnKhamBenh.Text = "KHÁM BỆNH";
             btnKhamBenh.UseVisualStyleBackColor = false;
-            // 
-            // btnXemChiTiet
-            // 
-            btnXemChiTiet.BackColor = Color.FromArgb(0, 123, 255);
-            btnXemChiTiet.FlatStyle = FlatStyle.Flat;
-            btnXemChiTiet.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnXemChiTiet.ForeColor = Color.White;
-            btnXemChiTiet.Location = new Point(185, 12);
-            btnXemChiTiet.Name = "btnXemChiTiet";
-            btnXemChiTiet.Size = new Size(130, 38);
-            btnXemChiTiet.TabIndex = 1;
-            btnXemChiTiet.Text = "Chi tiết";
-            btnXemChiTiet.UseVisualStyleBackColor = false;
-            btnXemChiTiet.Click += btnXemChiTiet_Click;
+            btnKhamBenh.Click += btnKhamBenh_Click;
             // 
             // btnRefresh
             // 
@@ -257,6 +247,20 @@
             btnRefresh.UseVisualStyleBackColor = false;
             btnRefresh.Click += btnRefresh_Click;
             // 
+            // btnXemChiTiet
+            // 
+            btnXemChiTiet.BackColor = Color.FromArgb(0, 123, 255);
+            btnXemChiTiet.FlatStyle = FlatStyle.Flat;
+            btnXemChiTiet.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnXemChiTiet.ForeColor = Color.White;
+            btnXemChiTiet.Location = new Point(185, 12);
+            btnXemChiTiet.Name = "btnXemChiTiet";
+            btnXemChiTiet.Size = new Size(130, 38);
+            btnXemChiTiet.TabIndex = 1;
+            btnXemChiTiet.Text = "Chi tiết";
+            btnXemChiTiet.UseVisualStyleBackColor = false;
+            btnXemChiTiet.Click += btnXemChiTiet_Click;
+            // 
             // lblTongSo
             // 
             lblTongSo.AutoSize = true;
@@ -264,7 +268,7 @@
             lblTongSo.ForeColor = Color.FromArgb(0, 123, 255);
             lblTongSo.Location = new Point(800, 22);
             lblTongSo.Name = "lblTongSo";
-            lblTongSo.Size = new Size(120, 19);
+            lblTongSo.Size = new Size(114, 19);
             lblTongSo.TabIndex = 3;
             lblTongSo.Text = "Tổng: 0 lịch hẹn";
             // 
@@ -289,27 +293,6 @@
             ((System.ComponentModel.ISupportInitialize)dsLich_Hen).EndInit();
             pnlButtons.ResumeLayout(false);
             pnlButtons.PerformLayout();
-
-            // 
-            // btnDangXuat (Cài đặt nút)
-            // 
-            this.btnDangXuat = new System.Windows.Forms.Button();
-            this.btnDangXuat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right))); // Neo vào góc dưới phải
-            this.btnDangXuat.BackColor = System.Drawing.Color.LightCoral; // Màu đỏ nhạt cho nổi bật
-            this.btnDangXuat.FlatAppearance.BorderSize = 0;
-            this.btnDangXuat.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDangXuat.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnDangXuat.ForeColor = System.Drawing.Color.White;
-            this.btnDangXuat.Location = new System.Drawing.Point(550, 10); // <-- Sửa số 520 thành 10
-            this.btnDangXuat.Name = "btnDangXuat";
-            this.btnDangXuat.Size = new System.Drawing.Size(120, 40);
-            this.btnDangXuat.TabIndex = 99;
-            this.btnDangXuat.Text = "Đăng Xuất";
-            this.btnDangXuat.UseVisualStyleBackColor = false;
-            this.btnDangXuat.Click += new System.EventHandler(this.btnDangXuat_Click);
-
-            // Dòng quan trọng nhất: Thêm vào pnlButtons
-            this.pnlButtons.Controls.Add(this.btnDangXuat); // <-- Sửa this.Controls thành this.pnlButtons.Controls
             ResumeLayout(false);
         }
 
@@ -333,6 +316,5 @@
         private Button btnXemChiTiet;
         private Button btnRefresh;
         private Label lblTongSo;
-        private System.Windows.Forms.Button btnDangXuat; // <-- Thêm dòng này
     }
 }

@@ -9,9 +9,10 @@ namespace PetCare_WinForm
     {
         private readonly PetCareContext _context;
         private readonly string _maLichHen;
-        private readonly string _maBacSi;
+        private string _maBacSi;
         private string? _maKhachHang;
         private string? _maChiNhanh;
+        private string? _maThuCung;
 
         public Kham_Benh()
         {
@@ -46,6 +47,38 @@ namespace PetCare_WinForm
         private void Kham_Benh_Load(object sender, EventArgs e)
         {
             LoadVaccine();
+
+            if (!string.IsNullOrEmpty(_maLichHen))
+            {
+                LoadThongTinKham(); // Lấy thông tin chi tiết từ DB
+            }
+        }
+
+        // --- 1. LOAD THÔNG TIN KHÁM TỪ SP ---
+        private void LoadThongTinKham()
+        {
+            try
+            {
+                var pMaLich = new SqlParameter("@MaLichHen", _maLichHen);
+                var info = _context.ThongTinKhamViews
+                    .FromSqlRaw("EXEC sp_GetThongTinKhamBenh @MaLichHen", pMaLich)
+                    .AsEnumerable().FirstOrDefault();
+
+                if (info != null)
+                {
+                    _maKhachHang = info.MaKH;
+                    _maBacSi = info.MaBS;
+                    _maChiNhanh = info.MaCN;
+                    _maThuCung = info.MaThuCung; // Lấy mã thú cưng để dùng cho Lịch Sử & Lưu Bệnh Án
+
+                    // Cập nhật UI chuẩn xác từ DB
+                    lblMaLichHen.Text = $"Mã lịch hẹn: {info.MaLichHen}";
+                    lblTenChu.Text = $"Chủ: {info.TenKhachHang}";
+                    lblTenBacSi.Text = $"Bác sĩ: {info.TenBacSi}";
+                    lblNgayKham.Text = $"Ngày: {info.NgayHen?.ToString("dd/MM/yyyy")}";
+                }
+            }
+            catch (Exception ex) { MessageBox.Show("Lỗi tải thông tin khám: " + ex.Message); }
         }
 
         /// <summary>
@@ -78,14 +111,8 @@ namespace PetCare_WinForm
                 dgvVacXin.Columns.Clear();
                 dgvVacXin.AutoGenerateColumns = true;
 
-                var vaccines = _context.Vaccines
-                    .Select(v => new
-                    {
-                        v.MaVc,
-                        v.TenVc,
-                        v.LoaiVc,
-                        v.GiaVc
-                    })
+                var vaccines = _context.VaccineViews
+                    .FromSqlRaw("EXEC sp_GetDanhSachVaccine")
                     .ToList();
 
                 dgvVacXin.DataSource = vaccines;
@@ -167,35 +194,29 @@ namespace PetCare_WinForm
                     }
                 }
 
-                // Cập nhật trạng thái lịch hẹn thành "DaKham"
-                var lichHen = _context.LichHens.FirstOrDefault(l => l.MaLichHen == _maLichHen);
-                if (lichHen != null)
+
+                // Thêm ghi chú về kết quả khám
+                string ketQuaKham = $"[Khám: {DateTime.Now:dd/MM/yyyy HH:mm}] " +
+                                    $"Triệu chứng: {txtTrieuChung.Text.Trim()}. " +
+                                    $"Chẩn đoán: {txtChanDoan.Text.Trim()}.";
+
+                if (!string.IsNullOrEmpty(toaThuoc))
                 {
-                    lichHen.TrangThai = "DaKham";
-
-                    // Thêm ghi chú về kết quả khám
-                    string ketQuaKham = $"[Khám: {DateTime.Now:dd/MM/yyyy HH:mm}] " +
-                                       $"Triệu chứng: {txtTrieuChung.Text.Trim()}. " +
-                                       $"Chẩn đoán: {txtChanDoan.Text.Trim()}.";
-
-                    if (!string.IsNullOrEmpty(toaThuoc))
-                    {
-                        ketQuaKham += $" Toa thuốc: {toaThuoc}.";
-                    }
-
-                    if (rBtnVacXin.Checked && dgvVacXin.SelectedRows.Count > 0)
-                    {
-                        string tenVaccine = dgvVacXin.SelectedRows[0].Cells["TenVc"].Value?.ToString() ?? "";
-                        ketQuaKham += $" Tiêm vaccine: {tenVaccine}.";
-                    }
-
-                    // Cập nhật ghi chú
-                    lichHen.GhiChu = string.IsNullOrEmpty(lichHen.GhiChu)
-                        ? ketQuaKham
-                        : lichHen.GhiChu + " | " + ketQuaKham;
+                    ketQuaKham += $" Toa thuốc: {toaThuoc}.";
                 }
 
-                _context.SaveChanges();
+                if (rBtnVacXin.Checked && dgvVacXin.SelectedRows.Count > 0)
+                {
+                    string tenVaccine = dgvVacXin.SelectedRows[0].Cells["TenVc"].Value?.ToString() ?? "";
+                    ketQuaKham += $" Tiêm vaccine: {tenVaccine}.";
+                }
+
+                // Gọi SP Cập nhật Lịch hẹn
+                var pMaLich = new SqlParameter("@MaLichHen", _maLichHen);
+                var pGhiChu = new SqlParameter("@GhiChu", ketQuaKham);
+
+                _context.Database.ExecuteSqlRaw("EXEC sp_HoanTatKhamBenh @MaLichHen, @GhiChu", pMaLich, pGhiChu);
+
 
                 MessageBox.Show($"Hoàn tất khám bệnh!\n\nMã lịch hẹn: {_maLichHen}\nBác sĩ: {lblTenBacSi.Text}",
                     "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -285,9 +306,8 @@ namespace PetCare_WinForm
                 }
 
                 // 2. Gọi Stored Procedure
-                var lichSuData = _context.Database
-                    .SqlQueryRaw<LichSuKhamResult>("EXEC sp_GetLichSuKham @MaTC",
-                        new SqlParameter("@MaTC", maThuCung))
+                var lichSuData = _context.LichSuKhamResults
+                    .FromSqlRaw("EXEC sp_GetLichSuKham @MaTC", new SqlParameter("@MaTC", _maThuCung))
                     .ToList();
 
                 // 3. Đổ dữ liệu vào GridView
@@ -394,20 +414,20 @@ namespace PetCare_WinForm
                     }
                 }
 
-                // 3. Insert vào bảng DV_KHAM
-                var dvKham = new DvKham
-                {
-                    MaKham = maDichVu, // MaKham = MaDv (1-1 relationship)
-                    TrieuChung = txtTrieuChung.Text.Trim(),
-                    ChuanDoan = txtChanDoan.Text.Trim(),
-                    ToaThuoc = toaThuoc,
-                    BacSiPhuTrach = _maBacSi,
-                    NgayTaiKham = null,
-                    GiaKhamBenh = 100000 // Giá mặc định
+                var param = new[] {
+                    new SqlParameter("@MaDichVu", maDichVu),
+                    new SqlParameter("@MaThuCung", (object?)_maThuCung ?? DBNull.Value),
+                    new SqlParameter("@MaChiNhanh", (object?)_maChiNhanh ?? DBNull.Value),
+                    new SqlParameter("@TrieuChung", txtTrieuChung.Text.Trim()),
+                    new SqlParameter("@ChuanDoan", txtChanDoan.Text.Trim()),
+                    new SqlParameter("@ToaThuoc", (object?)toaThuoc ?? DBNull.Value),
+                    new SqlParameter("@MaBacSi", (object?)_maBacSi ?? DBNull.Value),
+                    new SqlParameter("@GiaKham", 100000.0) // Giá mặc định hoặc lấy từ textbox
                 };
-                _context.DvKhams.Add(dvKham);
 
-                _context.SaveChanges();
+                _context.Database.ExecuteSqlRaw(
+                    "EXEC sp_LuuBenhAnKham @MaDichVu, @MaThuCung, @MaChiNhanh, @TrieuChung, @ChuanDoan, @ToaThuoc, @MaBacSi, @GiaKham",
+                    param);
 
                 MessageBox.Show($"Lưu bệnh án thành công!\n\nMã dịch vụ: {maDichVu}",
                     "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -429,10 +449,7 @@ namespace PetCare_WinForm
             }
         }
 
-        private void grpDieuTri_Enter(object sender, EventArgs e)
-        {
-            // Add your logic here if needed
-        }
+        private void grpDieuTri_Enter(object sender, EventArgs e) { }
     }
     public class LichSuKhamResult
     {
@@ -443,5 +460,25 @@ namespace PetCare_WinForm
         public DateTime? NgayTaiKham { get; set; }
         public string? BacSiPhuTrach { get; set; }
         public string? MaHoSo { get; set; }
+    }
+
+    public class VaccineView
+    {
+        public string MaVC { get; set; }
+        public string TenVC { get; set; }
+        public string LoaiVC { get; set; }
+        public double? GiaVC { get; set; }
+    }
+
+    public class ThongTinKhamView
+    {
+        public string MaLichHen { get; set; }
+        public string MaKH { get; set; }
+        public string TenKhachHang { get; set; }
+        public string MaBS { get; set; }
+        public string TenBacSi { get; set; }
+        public DateOnly? NgayHen { get; set; }
+        public string MaCN { get; set; }
+        public string MaThuCung { get; set; }
     }
 }

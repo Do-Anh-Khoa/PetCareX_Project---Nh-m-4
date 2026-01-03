@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using PetCare_Web.Data;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace PetCare_WinForm
 {
@@ -11,7 +13,6 @@ namespace PetCare_WinForm
         {
             InitializeComponent();
             _context = new PetCareContext();
-            btnKhamBenh.Click += btnKhamBenh_Click;
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -35,7 +36,7 @@ namespace PetCare_WinForm
                 new("ChoXacNhan", "Chờ xác nhận"),
                 new("DaXacNhan", "Đã xác nhận"),
                 new("DaHoanThanh", "Đã hoàn thành"),
-                new("DaHuy", "Đã hủy")
+                new("Huy", "Đã hủy")
             };
 
             cmbLocTrangThai.DataSource = trangThaiList;
@@ -54,48 +55,14 @@ namespace PetCare_WinForm
         {
             try
             {
-                dsLich_Hen.Columns.Clear();
-                dsLich_Hen.AutoGenerateColumns = true;
+                // Chuẩn bị tham số cho SP
+                var pTrangThai = new SqlParameter("@TrangThai", (object?)trangThai ?? DBNull.Value);
+                var pTuNgay = new SqlParameter("@TuNgay", (object?)tuNgay ?? DBNull.Value);
+                var pDenNgay = new SqlParameter("@DenNgay", (object?)denNgay ?? DBNull.Value);
 
-                var query = _context.LichHens
-                    .Include(l => l.MaKhNavigation)
-                    .Include(l => l.MaBsNavigation)
-                    .Include(l => l.MaCnNavigation)
-                    .AsQueryable();
-
-                // Lọc theo trạng thái
-                if (!string.IsNullOrEmpty(trangThai))
-                {
-                    query = query.Where(l => l.TrangThai == trangThai);
-                }
-
-                // Lọc theo ngày
-                if (tuNgay.HasValue)
-                {
-                    query = query.Where(l => l.NgayHen >= tuNgay.Value);
-                }
-
-                if (denNgay.HasValue)
-                {
-                    query = query.Where(l => l.NgayHen <= denNgay.Value);
-                }
-
-                var lichHenList = query
-                    .OrderByDescending(l => l.NgayHen)
-                    .ThenByDescending(l => l.GioHen)
-                    .Select(l => new
-                    {
-                        l.MaLichHen,
-                        l.NgayHen,
-                        l.GioHen,
-                        l.TrangThai,
-                        l.GhiChu,
-                        TenKhachHang = l.MaKhNavigation != null ? l.MaKhNavigation.HoTen : "Khách vãng lai",
-                        SoDT = l.MaKhNavigation != null ? l.MaKhNavigation.SoDt : "",
-                        TenBacSi = l.MaBsNavigation != null ? l.MaBsNavigation.HoTen : "",
-                        MaBacSi = l.MaBs,
-                        TenChiNhanh = l.MaCnNavigation != null ? l.MaCnNavigation.TenChiNhanh : ""
-                    })
+                // Gọi SP và map vào ViewModel
+                var lichHenList = _context.LichHenKhamViews
+                    .FromSqlRaw("EXEC sp_GetDanhSachLichHenKham @TrangThai, @TuNgay, @DenNgay", pTrangThai, pTuNgay, pDenNgay)
                     .ToList();
 
                 dsLich_Hen.DataSource = lichHenList;
@@ -218,15 +185,21 @@ namespace PetCare_WinForm
             string trangThai = selectedRow.Cells["TrangThai"].Value?.ToString() ?? "";
 
             // Kiểm tra trạng thái
-            if (trangThai == "DaKham")
+            if (trangThai == "DaHoanThanh")
             {
                 MessageBox.Show("Lịch hẹn này đã được khám!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (trangThai == "DaHuy")
+            if (trangThai == "Huy")
             {
                 MessageBox.Show("Lịch hẹn này đã bị hủy!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (trangThai == "ChoXacNhan")
+            {
+                MessageBox.Show("Lịch hẹn này chưa được duyệt!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -242,22 +215,19 @@ namespace PetCare_WinForm
             // Reload lịch hẹn sau khi khám xong
             LoadLichHen();
         }
+    }
 
-        // Thêm vào file Lich_Hen.cs
-
-        private void btnDangXuat_Click(object sender, EventArgs e)
-        {
-            DialogResult result = MessageBox.Show(
-                "Bác sĩ có chắc chắn muốn đăng xuất không?", 
-                "Xác nhận đăng xuất", 
-                MessageBoxButtons.YesNo, 
-                MessageBoxIcon.Question
-            );
-
-            if (result == DialogResult.Yes)
-            {
-                this.Close(); // Đóng Form Bác sĩ -> Code bên FrmLogin sẽ tự chạy tiếp để hiện lại màn hình Đăng nhập
-            }
-        }
+    public class LichHenKhamView
+    {
+        public string MaLichHen { get; set; }
+        public DateOnly? NgayHen { get; set; }
+        public TimeOnly? GioHen { get; set; }
+        public string? TrangThai { get; set; }
+        public string? GhiChu { get; set; }
+        public string TenKhachHang { get; set; }
+        public string SoDT { get; set; }
+        public string TenBacSi { get; set; }
+        public string MaBacSi { get; set; }
+        public string TenChiNhanh { get; set; }
     }
 }

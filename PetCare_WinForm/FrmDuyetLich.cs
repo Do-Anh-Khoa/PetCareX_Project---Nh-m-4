@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using PetCare_Web.Data;
 using PetCare_Web.Models;
 
@@ -31,8 +32,31 @@ namespace PetCare_WinForm
             LoadLichHen();
             LoadComboBoxData();
 
-            //Mặc định khóa chọn thú cưng khi mới vào
-            cmbThuCung.Enabled = false;
+            ToggleCheDoNhapThuCung(false);
+        }
+
+        /// <summary>
+        /// HÀM HỖ TRỢ: Ẩn/Hiện ô nhập thú cưng mới
+        /// </summary>
+        private void ToggleCheDoNhapThuCung(bool isNhapMoi)
+        {
+            if (isNhapMoi)
+            {
+                // KHÁCH MỚI: Hiện ô nhập Textbox, Ẩn ComboBox
+                cmbThuCung.Visible = false;
+                txtTenPetMoi.Visible = true;
+                lblLoaiPetMoi.Visible = true;
+                txtLoaiPetMoi.Visible = true;
+                txtTenPetMoi.Clear();
+            }
+            else
+            {
+                // KHÁCH CŨ: Hiện ComboBox, Ẩn ô nhập Textbox
+                cmbThuCung.Visible = true;
+                txtTenPetMoi.Visible = false;
+                lblLoaiPetMoi.Visible = false;
+                txtLoaiPetMoi.Visible = false;
+            }
         }
 
         /// <summary>
@@ -42,23 +66,8 @@ namespace PetCare_WinForm
         {
             try
             {
-                var lichHenList = _context.LichHens
-                    .Include(l => l.MaKhNavigation)
-                    .Include(l => l.MaBsNavigation)
-                    .Include(l => l.MaCnNavigation)
-                    .Where(l => l.TrangThai == "ChoXacNhan" || l.TrangThai == null || l.TrangThai == "")
-                    .Select(l => new
-                    {
-                        l.MaLichHen,
-                        TenKhachHang = l.MaKhNavigation != null ? l.MaKhNavigation.HoTen : "Khách vãng lai",
-                        SoDT = l.MaKhNavigation != null ? l.MaKhNavigation.SoDt : "",
-                        l.NgayHen,
-                        l.GioHen,
-                        TenBacSi = l.MaBsNavigation != null ? l.MaBsNavigation.HoTen : "",
-                        TenChiNhanh = l.MaCnNavigation != null ? l.MaCnNavigation.TenChiNhanh : "",
-                        l.TrangThai,
-                        l.GhiChu
-                    })
+                var lichHenList = _context.LichHenViews
+                    .FromSqlRaw("EXEC sp_GetLichHenChoDuyet")
                     .ToList();
 
                 dgvLichHen.DataSource = lichHenList;
@@ -90,19 +99,18 @@ namespace PetCare_WinForm
         {
             try
             {
-                // Load danh sách bác sĩ
-                var bacSiList = _context.NhanViens
-                    .Where(nv => nv.ChucVu == "BacSi" || nv.ChucVu == "Bác sĩ")
-                    .Select(nv => new { nv.MaNv, nv.HoTen })
+                // Gọi SP lấy Bác sĩ -> map vào BacSiView
+                var bacSiList = _context.BacSiViews
+                    .FromSqlRaw("EXEC sp_GetDanhSachBacSi")
                     .ToList();
 
                 cmbBacSi.DataSource = bacSiList;
                 cmbBacSi.DisplayMember = "HoTen";
                 cmbBacSi.ValueMember = "MaNv";
 
-                // Load danh sách chi nhánh
-                var chiNhanhList = _context.ChiNhanhs
-                    .Select(cn => new { cn.MaCn, cn.TenChiNhanh })
+                // Gọi SP lấy Chi nhánh -> map vào ChiNhanhView
+                var chiNhanhList = _context.ChiNhanhViews
+                    .FromSqlRaw("EXEC sp_GetDanhSachChiNhanh")
                     .ToList();
 
                 cmbChiNhanh.DataSource = chiNhanhList;
@@ -180,27 +188,42 @@ namespace PetCare_WinForm
             try
             {
                 // Tìm khách hàng và include luôn danh sách thú cưng
-                var khachHang = _context.KhachHangs
-                    .Include(k => k.ThuCungs)
-                    .FirstOrDefault(k => k.SoDt == sdt);
+                // Gọi SP tìm khách hàng -> map vào KhachHangInfoView
+                var pSdt = new Microsoft.Data.SqlClient.SqlParameter("@SoDt", sdt);
 
-                if (khachHang != null)
+                var khachHangInfo = _context.KhachHangInfoViews
+                    .FromSqlRaw("EXEC sp_GetKhachHangInfoBySDT @SoDt", pSdt)
+                    .AsEnumerable()
+                    .FirstOrDefault();
+
+                if (khachHangInfo != null)
                 {
                     // === KHÁCH CŨ ===
-                    _maKhachHangHienTai = khachHang.MaKh; // Lưu lại mã
+                    _maKhachHangHienTai = khachHangInfo.MaKH; // Lưu lại mã
 
                     // Điền thông tin lên form
-                    txtTenKH.Text = khachHang.HoTen;
+                    txtTenKH.Text = khachHangInfo.HoTen;
                     txtTenKH.ReadOnly = true; // Khóa không cho sửa tên khách cũ (tuỳ bạn chọn)
 
                     // Xử lý ComboBox Thú Cưng
+                    ToggleCheDoNhapThuCung(false);  // Chuyển sang chế độ chọn
                     cmbThuCung.Enabled = true;
-                    cmbThuCung.DataSource = null;
 
-                    if (khachHang.ThuCungs.Any())
+                    // RESET DATASOURCE TRƯỚC KHI GÁN MỚI
+                    cmbThuCung.DataSource = null;
+                    cmbThuCung.Items.Clear();
+
+                    // Gọi SP lấy thú cưng -> map vào ThuCungInfoView
+                    var pMaKh = new Microsoft.Data.SqlClient.SqlParameter("@MaKh", khachHangInfo.MaKH);
+
+                    var listThuCung = _context.ThuCungInfoViews
+                        .FromSqlRaw("EXEC sp_GetThuCungInfoByMaKh @MaKh", pMaKh)
+                        .ToList();
+
+                    if (listThuCung.Any())
                     {
-                        cmbThuCung.DataSource = khachHang.ThuCungs.ToList();
-                        cmbThuCung.DisplayMember = "TenThuCung"; // Tên cột hiển thị (VD: Milu, Kiki)
+                        cmbThuCung.DataSource = listThuCung;
+                        cmbThuCung.DisplayMember = "TenTc";     // Tên cột hiển thị (VD: Milu, Kiki)
                         cmbThuCung.ValueMember = "TenTc";        // Tên cột giá trị (Tên thú cưng)
                     }
                     else
@@ -210,7 +233,7 @@ namespace PetCare_WinForm
                         cmbThuCung.SelectedIndex = 0;
                     }
 
-                    MessageBox.Show($"Tìm thấy khách hàng: {khachHang.HoTen}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Tìm thấy khách hàng: {khachHangInfo.HoTen}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
@@ -219,10 +242,7 @@ namespace PetCare_WinForm
 
                     txtTenKH.Clear();
                     txtTenKH.ReadOnly = false; // Mở khóa cho nhập tên mới
-
-                    cmbThuCung.DataSource = null;
-                    cmbThuCung.Items.Clear();
-                    cmbThuCung.Enabled = false; // Khách mới chưa có thú cưng trong DB
+                    ToggleCheDoNhapThuCung(true); // Chuyển sang chế độ nhập mới
 
                     MessageBox.Show("Khách hàng chưa tồn tại. Vui lòng nhập tên để tạo mới.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     txtTenKH.Focus();
@@ -246,18 +266,20 @@ namespace PetCare_WinForm
                 {
                     MessageBox.Show("Vui lòng nhập tên khách hàng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning); return;
                 }
-                if (string.IsNullOrWhiteSpace(txtSoDT.Text))
-                {
-                    MessageBox.Show("Vui lòng nhập số điện thoại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning); return;
-                }
 
                 string finalMaKh = "";
+                string tenThuCungGhiChu = "";
 
                 // 2. XỬ LÝ KHÁCH HÀNG
                 if (_maKhachHangHienTai != null)
                 {
                     // TRƯỜNG HỢP KHÁCH CŨ: Dùng lại mã đã tìm thấy
                     finalMaKh = _maKhachHangHienTai;
+
+                    if (cmbThuCung.Items.Count > 0 && cmbThuCung.DataSource != null)
+                    {
+                        tenThuCungGhiChu = cmbThuCung.Text;
+                    }
                 }
                 else
                 {
@@ -277,22 +299,31 @@ namespace PetCare_WinForm
                         MaKh = finalMaKh,
                         HoTen = txtTenKH.Text.Trim(),
                         SoDt = txtSoDT.Text.Trim(),
-                        CapHoiVien = "VangLai",
+                        CapHoiVien = "CoBan",
                         DiemTichLuy = 0
                     };
                     _context.KhachHangs.Add(khachHangMoi);
+
+                    if (!string.IsNullOrWhiteSpace(txtTenPetMoi.Text))
+                    {
+                        var thuCungMoi = new ThuCung
+                        {
+                            MaTc = "TC" + DateTime.Now.ToString("ddHHmmss"),
+                            TenTc = txtTenPetMoi.Text.Trim(),
+                            Loai = txtLoaiPetMoi.Text.Trim(),
+                            MaKh = finalMaKh,
+                            MaKhNavigation = khachHangMoi
+                        };
+                        _context.ThuCungs.Add(thuCungMoi);
+                        tenThuCungGhiChu = thuCungMoi.TenTc;
+                    }
                 }
 
                 // 3. XỬ LÝ GHI CHÚ (Ghép tên thú cưng vào ghi chú nếu có chọn)
                 string ghiChuFinal = txtGhiChu.Text.Trim();
-                if (cmbThuCung.Enabled && cmbThuCung.SelectedItem != null && cmbThuCung.DataSource != null)
+                if (!string.IsNullOrEmpty(tenThuCungGhiChu))
                 {
-                    // Lấy object thú cưng đang chọn
-                    var pet = cmbThuCung.SelectedItem as ThuCung;
-                    if (pet != null)
-                    {
-                        ghiChuFinal = $"[Bé: {pet.TenTc}] " + ghiChuFinal;
-                    }
+                    ghiChuFinal = $"[Bé: {tenThuCungGhiChu}] " + ghiChuFinal;
                 }
 
                 // 4. TẠO LỊCH HẸN
@@ -357,10 +388,17 @@ namespace PetCare_WinForm
             dtpNgayHen.Value = DateTime.Now;
             dtpGioHen.Value = DateTime.Now;
 
+            // Xóa text cho các ô nhập thú cưng mới
+            txtTenPetMoi.Clear();
+            txtLoaiPetMoi.Clear();
+
             // Reset combo thú cưng
             cmbThuCung.DataSource = null;
             cmbThuCung.Items.Clear();
             cmbThuCung.Enabled = false;
+
+            // Đưa về chế độ mặc định (Khách cũ) để ẩn các ô nhập mới
+            ToggleCheDoNhapThuCung(false);
         }
 
         private void groupBoxTaoLich_Enter(object sender, EventArgs e)
@@ -368,4 +406,27 @@ namespace PetCare_WinForm
 
         }
     }
+    public class LichHenView
+    {
+        public string MaLichHen { get; set; }
+        public string TenKhachHang { get; set; }
+        public string SoDT { get; set; }
+        public DateOnly? NgayHen { get; set; }
+        public TimeOnly? GioHen { get; set; }
+        public string? TenBacSi { get; set; }
+        public string? TenChiNhanh { get; set; }
+        public string? TrangThai { get; set; }
+        public string? GhiChu { get; set; }
+    }
+
+    // Hứng dữ liệu cho ComboBox (Dùng chung cho Bác sĩ, Chi nhánh, Thú cưng, Khách hàng)
+
+    public class BacSiView { public string MaNV { get; set; } public string HoTen { get; set; } }
+
+    public class ChiNhanhView { public string MaCN { get; set; } public string TenChiNhanh { get; set; } }
+
+    public class KhachHangInfoView { public string MaKH { get; set; } public string HoTen { get; set; } }
+
+    public class ThuCungInfoView { public string MaTC { get; set; } public string TenTC { get; set; } }
+
 }

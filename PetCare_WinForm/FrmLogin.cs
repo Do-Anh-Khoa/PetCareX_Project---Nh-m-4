@@ -168,11 +168,19 @@ namespace PetCare_WinForm
                         else if (username.StartsWith("NV", StringComparison.OrdinalIgnoreCase))
                         {
                             // Mở form Quản lý dưới dạng Dialog (Chờ đóng form)
-                            FrmHome frmAdmin = new FrmHome(); 
-                            frmAdmin.ShowDialog(); 
+                            FrmHome frmNhanVien = new FrmHome(); 
+                            frmNhanVien.ShowDialog(); 
                         }
-                        
-                        // Trường hợp khác (ví dụ admin hệ thống)
+
+                        // TH3: NHÂN VIÊN (QL...) -> Mở Trang Chủ / Quản lý
+                        else if (username.StartsWith("QL", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Mở form Quản lý dưới dạng Dialog (Chờ đóng form)
+                            FrmQuanLy frmQuanLy = new FrmQuanLy();
+                            frmQuanLy.ShowDialog();
+                        }
+
+                        // Trường hợp khác
                         else
                         {
                             MessageBox.Show("Tài khoản này chưa được phân quyền cụ thể.");
