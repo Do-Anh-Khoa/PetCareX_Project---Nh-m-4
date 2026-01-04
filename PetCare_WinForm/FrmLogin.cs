@@ -105,6 +105,8 @@ using System;
 using System.Diagnostics; // Dùng để mở trình duyệt Web
 using System.Linq;
 using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using PetCare_Web.Data;   // Namespace chứa DB Context
 using PetCare_Web.Models; // Namespace chứa Models (TaiKhoan)
 
@@ -112,6 +114,10 @@ namespace PetCare_WinForm
 {
     public partial class FrmLogin : Form
     {
+        string MaNV_DangNhap;
+        string TenNV_DangNhap;
+        string ChucVu_DangNhap;
+
         public FrmLogin()
         {
             InitializeComponent();
@@ -139,16 +145,24 @@ namespace PetCare_WinForm
                     var user = context.TaiKhoans
                                       .FirstOrDefault(u => u.UserName == username && u.MatKhau == password);
 
+                    var nv = context.Set<NhanVienTaiKhoanVm>()
+                        .FromSqlInterpolated(
+                            $"EXEC sp_GetNhanVien_ID @username={username}")
+                        .AsEnumerable()
+                        .FirstOrDefault();
+
                     if (user != null)
                     {
                         // --- ĐĂNG NHẬP THÀNH CÔNG ---
-                        
                         // Ẩn form đăng nhập đi để màn hình thoáng
-                        this.Hide(); 
+                        this.Hide();
+                        MaNV_DangNhap = nv.MaNV;
+                        TenNV_DangNhap = nv.HoTen;
+                        ChucVu_DangNhap = nv.ChucVu;
 
                         // 3. PHÂN QUYỀN & ĐIỀU HƯỚNG
                         // ---------------------------------------------------------
-                        
+
                         // TH1: KHÁCH HÀNG (KH...) -> Mở Website
                         if (username.StartsWith("KH", StringComparison.OrdinalIgnoreCase))
                         {
@@ -160,7 +174,7 @@ namespace PetCare_WinForm
                         else if (username.StartsWith("BS", StringComparison.OrdinalIgnoreCase))
                         {
                             // Mở form Bác sĩ dưới dạng Dialog (Chương trình sẽ dừng ở dòng này chờ Bác sĩ đóng form)
-                            Lich_Hen frmBacSi = new Lich_Hen(); 
+                            Lich_Hen frmBacSi = new Lich_Hen(MaNV_DangNhap, TenNV_DangNhap, ChucVu_DangNhap); 
                             frmBacSi.ShowDialog(); 
                         }
                         
@@ -168,7 +182,7 @@ namespace PetCare_WinForm
                         else if (username.StartsWith("NV", StringComparison.OrdinalIgnoreCase))
                         {
                             // Mở form Quản lý dưới dạng Dialog (Chờ đóng form)
-                            FrmHome frmNhanVien = new FrmHome(); 
+                            FrmHome frmNhanVien = new FrmHome(MaNV_DangNhap, TenNV_DangNhap, ChucVu_DangNhap); 
                             frmNhanVien.ShowDialog(); 
                         }
 
@@ -176,7 +190,7 @@ namespace PetCare_WinForm
                         else if (username.StartsWith("QL", StringComparison.OrdinalIgnoreCase))
                         {
                             // Mở form Quản lý dưới dạng Dialog (Chờ đóng form)
-                            FrmQuanLy frmQuanLy = new FrmQuanLy();
+                            FrmQuanLy frmQuanLy = new FrmQuanLy(MaNV_DangNhap, TenNV_DangNhap, ChucVu_DangNhap);
                             frmQuanLy.ShowDialog();
                         }
 

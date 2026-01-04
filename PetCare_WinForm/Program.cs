@@ -11,19 +11,9 @@
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2); // Dùng để điều chỉnh kích thước data grid
 
             // Application.Run(new FormPOS());
-
-            // Test nhân viên
-            // Application.Run(new FrmHome());
-
-            // Test Bác sĩ
-            // Application.Run(new Lich_Hen());
-            
-            // Test Quản lý
-            // Application.Run(new FrmQuanLy());
-
-            // Test login
             Application.Run(new FrmLogin());
         }
     }

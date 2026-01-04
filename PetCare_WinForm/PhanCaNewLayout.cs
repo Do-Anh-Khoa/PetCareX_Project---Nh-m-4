@@ -17,6 +17,8 @@ namespace PetCare_WinForm
     public partial class PhanCaNewLayout : Form
     {
         private readonly PetCareContext _context;
+        private Size originalFormSize;
+        private Dictionary<Control, Rectangle> ControlBounds = new Dictionary<Control, Rectangle>();
         public PhanCaNewLayout()
         {
             InitializeComponent();
@@ -25,7 +27,38 @@ namespace PetCare_WinForm
 
         private void PhanCaNewLayout_Load(object sender, EventArgs e)
         {
+            originalFormSize = this.Size;
+            StoreControlBounds(this);
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+        }
 
+        private void PhanCaNewLayout_Resize(object sender, EventArgs e)
+        {
+            float xRatio = (float)this.Width / (float)originalFormSize.Width;
+            float yRatio = (float)this.Height / (float)originalFormSize.Height;
+            foreach (Control ctrl in this.Controls)
+            {
+                if (!ControlBounds.ContainsKey(ctrl)) return;
+                Rectangle r = ControlBounds[ctrl];
+                int newX = (int)(r.X * xRatio);
+                int newY = (int)(r.Y * yRatio);
+                int newWidth = (int)(r.Width * xRatio);
+                int newHeight = (int)(r.Height * yRatio);
+                ctrl.Bounds = new Rectangle(newX, newY, newWidth, newHeight);
+            }
+        }
+
+        private void StoreControlBounds(Control parent)
+        {
+            foreach (Control ctrl in parent.Controls)
+            {
+                ControlBounds[ctrl] = ctrl.Bounds;
+
+                if (ctrl.Controls.Count > 0)
+                {
+                    StoreControlBounds(ctrl);
+                }
+            }
         }
 
         private void btn_TimKiemCaLam_Click(object sender, EventArgs e)

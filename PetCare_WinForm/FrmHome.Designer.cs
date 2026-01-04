@@ -254,6 +254,7 @@ namespace PetCare_WinForm
         private void InitializeComponent()
         {
             pnlSidebar = new Panel();
+            btnChamCong = new Button();
             btnBaoCao = new Button();
             btnThanhToan = new Button();
             btnBanHang = new Button();
@@ -264,15 +265,21 @@ namespace PetCare_WinForm
             btnDangXuat = new Button();
             pnlContent = new Panel();
             lblWelcome = new Label();
-            btnChamCong = new Button();
+            panel1 = new Panel();
+            panel2 = new Panel();
+            lbl_ThongTin = new Label();
             pnlSidebar.SuspendLayout();
             pnlLogo.SuspendLayout();
             pnlContent.SuspendLayout();
+            panel1.SuspendLayout();
+            panel2.SuspendLayout();
             SuspendLayout();
             // 
             // pnlSidebar
             // 
             pnlSidebar.BackColor = Color.FromArgb(52, 58, 64);
+            pnlSidebar.Controls.Add(panel2);
+            pnlSidebar.Controls.Add(panel1);
             pnlSidebar.Controls.Add(btnChamCong);
             pnlSidebar.Controls.Add(btnBaoCao);
             pnlSidebar.Controls.Add(btnThanhToan);
@@ -280,13 +287,30 @@ namespace PetCare_WinForm
             pnlSidebar.Controls.Add(btnKhamBenh);
             pnlSidebar.Controls.Add(btnDuyetLich);
             pnlSidebar.Controls.Add(pnlLogo);
-            pnlSidebar.Controls.Add(btnDangXuat);
             pnlSidebar.Dock = DockStyle.Left;
             pnlSidebar.Location = new Point(0, 0);
             pnlSidebar.Margin = new Padding(3, 4, 3, 4);
             pnlSidebar.Name = "pnlSidebar";
             pnlSidebar.Size = new Size(286, 800);
             pnlSidebar.TabIndex = 0;
+            // 
+            // btnChamCong
+            // 
+            btnChamCong.Dock = DockStyle.Top;
+            btnChamCong.FlatAppearance.BorderSize = 0;
+            btnChamCong.FlatStyle = FlatStyle.Flat;
+            btnChamCong.Font = new Font("Segoe UI", 12F);
+            btnChamCong.ForeColor = Color.White;
+            btnChamCong.Location = new Point(0, 480);
+            btnChamCong.Margin = new Padding(3, 4, 3, 4);
+            btnChamCong.Name = "btnChamCong";
+            btnChamCong.Padding = new Padding(23, 0, 0, 0);
+            btnChamCong.Size = new Size(286, 80);
+            btnChamCong.TabIndex = 100;
+            btnChamCong.Text = "Chấm công";
+            btnChamCong.TextAlign = ContentAlignment.MiddleLeft;
+            btnChamCong.UseVisualStyleBackColor = true;
+            btnChamCong.Click += btnChamCong_Click;
             // 
             // btnBaoCao
             // 
@@ -403,20 +427,21 @@ namespace PetCare_WinForm
             // 
             // btnDangXuat
             // 
-            btnDangXuat.Dock = DockStyle.Bottom;
+            btnDangXuat.BackColor = Color.FromArgb(255, 128, 128);
+            btnDangXuat.Dock = DockStyle.Fill;
             btnDangXuat.FlatAppearance.BorderSize = 0;
             btnDangXuat.FlatStyle = FlatStyle.Flat;
             btnDangXuat.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            btnDangXuat.ForeColor = Color.LightCoral;
-            btnDangXuat.Location = new Point(0, 720);
+            btnDangXuat.ForeColor = Color.Black;
+            btnDangXuat.Location = new Point(0, 0);
             btnDangXuat.Margin = new Padding(3, 4, 3, 4);
             btnDangXuat.Name = "btnDangXuat";
             btnDangXuat.Padding = new Padding(23, 0, 0, 0);
-            btnDangXuat.Size = new Size(286, 80);
+            btnDangXuat.Size = new Size(286, 72);
             btnDangXuat.TabIndex = 99;
             btnDangXuat.Text = "Đăng Xuất";
             btnDangXuat.TextAlign = ContentAlignment.MiddleLeft;
-            btnDangXuat.UseVisualStyleBackColor = true;
+            btnDangXuat.UseVisualStyleBackColor = false;
             btnDangXuat.Click += btnDangXuat_Click;
             // 
             // pnlContent
@@ -442,23 +467,35 @@ namespace PetCare_WinForm
             lblWelcome.Text = "Chào mừng đến với hệ thống quản lý PetCare\r\nVui lòng chọn chức năng từ menu bên trái";
             lblWelcome.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // btnChamCong
+            // panel1
             // 
-            btnChamCong.Dock = DockStyle.Top;
-            btnChamCong.FlatAppearance.BorderSize = 0;
-            btnChamCong.FlatStyle = FlatStyle.Flat;
-            btnChamCong.Font = new Font("Segoe UI", 12F);
-            btnChamCong.ForeColor = Color.White;
-            btnChamCong.Location = new Point(0, 480);
-            btnChamCong.Margin = new Padding(3, 4, 3, 4);
-            btnChamCong.Name = "btnChamCong";
-            btnChamCong.Padding = new Padding(23, 0, 0, 0);
-            btnChamCong.Size = new Size(286, 80);
-            btnChamCong.TabIndex = 100;
-            btnChamCong.Text = "Chấm công";
-            btnChamCong.TextAlign = ContentAlignment.MiddleLeft;
-            btnChamCong.UseVisualStyleBackColor = true;
-            btnChamCong.Click += btnChamCong_Click;
+            panel1.Controls.Add(btnDangXuat);
+            panel1.Dock = DockStyle.Bottom;
+            panel1.Location = new Point(0, 728);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(286, 72);
+            panel1.TabIndex = 101;
+            // 
+            // panel2
+            // 
+            panel2.Controls.Add(lbl_ThongTin);
+            panel2.Dock = DockStyle.Bottom;
+            panel2.Location = new Point(0, 656);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(286, 72);
+            panel2.TabIndex = 102;
+            // 
+            // lbl_ThongTin
+            // 
+            lbl_ThongTin.Dock = DockStyle.Fill;
+            lbl_ThongTin.Font = new Font("Segoe UI", 12F);
+            lbl_ThongTin.ForeColor = SystemColors.ButtonHighlight;
+            lbl_ThongTin.Location = new Point(0, 0);
+            lbl_ThongTin.Name = "lbl_ThongTin";
+            lbl_ThongTin.Size = new Size(286, 72);
+            lbl_ThongTin.TabIndex = 0;
+            lbl_ThongTin.Text = "--- / ----";
+            lbl_ThongTin.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // FrmHome
             // 
@@ -474,6 +511,8 @@ namespace PetCare_WinForm
             pnlSidebar.ResumeLayout(false);
             pnlLogo.ResumeLayout(false);
             pnlContent.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            panel2.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -491,5 +530,8 @@ namespace PetCare_WinForm
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Label lblWelcome;
         private Button btnChamCong;
+        private Panel panel2;
+        private Panel panel1;
+        private Label lbl_ThongTin;
     }
 }

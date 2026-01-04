@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            hoaDonBindingSource = new BindingSource(components);
             dataGridView1 = new DataGridView();
             label1 = new Label();
             dsTop10BS = new DataGridView();
@@ -41,13 +39,13 @@
             button1 = new Button();
             Choice_ChiNhanh = new ComboBox();
             textBox1 = new TextBox();
-            ((System.ComponentModel.ISupportInitialize)hoaDonBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dsTop10BS).BeginInit();
             SuspendLayout();
             // 
             // dataGridView1
             // 
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Location = new Point(387, 111);
             dataGridView1.Name = "dataGridView1";
@@ -68,6 +66,7 @@
             // dsTop10BS
             // 
             dsTop10BS.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dsTop10BS.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dsTop10BS.Location = new Point(56, 113);
             dsTop10BS.Name = "dsTop10BS";
             dsTop10BS.RowHeadersWidth = 51;
@@ -170,16 +169,19 @@
             Name = "DoanhThu";
             Text = "Doanh Thu";
             Load += DoanhThu_Load;
-            ((System.ComponentModel.ISupportInitialize)hoaDonBindingSource).EndInit();
+            Resize += DoanhThu_Resize;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)dsTop10BS).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
-        #endregion
+        private void DoanhThu_Resize1(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
-        private BindingSource hoaDonBindingSource;
+        #endregion
         private DataGridView dataGridView1;
         private Label label1;
         private DataGridView dsTop10BS;

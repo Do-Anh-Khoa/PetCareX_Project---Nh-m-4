@@ -1,4 +1,6 @@
-﻿namespace PetCare_WinForm
+﻿using System.Windows.Forms;
+
+namespace PetCare_WinForm
 {
     partial class PhanCaNewLayout
     {
@@ -38,18 +40,21 @@
             // dataGridView_Chinh
             // 
             dataGridView_Chinh.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView_Chinh.Location = new Point(1, 12);
+            dataGridView_Chinh.Dock = DockStyle.Top;
+            dataGridView_Chinh.Location = new Point(0, 0);
             dataGridView_Chinh.Name = "dataGridView_Chinh";
             dataGridView_Chinh.RowHeadersWidth = 51;
-            dataGridView_Chinh.Size = new Size(798, 333);
+            dataGridView_Chinh.Size = new Size(800, 332);
             dataGridView_Chinh.TabIndex = 0;
+            dataGridView_Chinh.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            this.AutoScaleMode = AutoScaleMode.Dpi;
             // 
             // btn_ThemCaLam
             // 
             btn_ThemCaLam.Font = new Font("Segoe UI", 16F);
-            btn_ThemCaLam.Location = new Point(273, 368);
+            btn_ThemCaLam.Location = new Point(273, 352);
             btn_ThemCaLam.Name = "btn_ThemCaLam";
-            btn_ThemCaLam.Size = new Size(243, 55);
+            btn_ThemCaLam.Size = new Size(243, 54);
             btn_ThemCaLam.TabIndex = 2;
             btn_ThemCaLam.Text = "Thêm ca làm";
             btn_ThemCaLam.UseVisualStyleBackColor = true;
@@ -58,9 +63,9 @@
             // btn_XoaCaLam
             // 
             btn_XoaCaLam.Font = new Font("Segoe UI", 16F);
-            btn_XoaCaLam.Location = new Point(534, 368);
+            btn_XoaCaLam.Location = new Point(534, 352);
             btn_XoaCaLam.Name = "btn_XoaCaLam";
-            btn_XoaCaLam.Size = new Size(243, 55);
+            btn_XoaCaLam.Size = new Size(243, 54);
             btn_XoaCaLam.TabIndex = 3;
             btn_XoaCaLam.Text = "Xóa ca làm";
             btn_XoaCaLam.UseVisualStyleBackColor = true;
@@ -69,9 +74,9 @@
             // btn_TimKiemCaLam
             // 
             btn_TimKiemCaLam.Font = new Font("Segoe UI", 16F);
-            btn_TimKiemCaLam.Location = new Point(12, 368);
+            btn_TimKiemCaLam.Location = new Point(12, 352);
             btn_TimKiemCaLam.Name = "btn_TimKiemCaLam";
-            btn_TimKiemCaLam.Size = new Size(243, 55);
+            btn_TimKiemCaLam.Size = new Size(243, 54);
             btn_TimKiemCaLam.TabIndex = 4;
             btn_TimKiemCaLam.Text = "Tìm kiếm ca làm";
             btn_TimKiemCaLam.UseVisualStyleBackColor = true;
@@ -89,6 +94,7 @@
             Name = "PhanCaNewLayout";
             Text = "Phân ca";
             Load += PhanCaNewLayout_Load;
+            Resize += PhanCaNewLayout_Resize;
             ((System.ComponentModel.ISupportInitialize)dataGridView_Chinh).EndInit();
             ResumeLayout(false);
         }

@@ -30,8 +30,11 @@
         {
             components = new System.ComponentModel.Container();
             PanelMenu = new Panel();
+            panel4 = new Panel();
+            lbl_ThongTin = new Label();
+            panel3 = new Panel();
+            btn_DangXuat = new Button();
             button2 = new Button();
-            lblClock = new Label();
             button1 = new Button();
             ButtonChamCong = new Button();
             ButtonDoanhThu = new Button();
@@ -42,6 +45,8 @@
             panelDesktopPane = new Panel();
             timer1 = new System.Windows.Forms.Timer(components);
             PanelMenu.SuspendLayout();
+            panel4.SuspendLayout();
+            panel3.SuspendLayout();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             SuspendLayout();
@@ -49,8 +54,9 @@
             // PanelMenu
             // 
             PanelMenu.BackColor = Color.FromArgb(51, 51, 76);
+            PanelMenu.Controls.Add(panel4);
+            PanelMenu.Controls.Add(panel3);
             PanelMenu.Controls.Add(button2);
-            PanelMenu.Controls.Add(lblClock);
             PanelMenu.Controls.Add(button1);
             PanelMenu.Controls.Add(ButtonChamCong);
             PanelMenu.Controls.Add(ButtonDoanhThu);
@@ -60,6 +66,52 @@
             PanelMenu.Name = "PanelMenu";
             PanelMenu.Size = new Size(220, 554);
             PanelMenu.TabIndex = 0;
+            // 
+            // panel4
+            // 
+            panel4.Controls.Add(lbl_ThongTin);
+            panel4.Dock = DockStyle.Bottom;
+            panel4.Location = new Point(0, 430);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(220, 62);
+            panel4.TabIndex = 9;
+            // 
+            // lbl_ThongTin
+            // 
+            lbl_ThongTin.Dock = DockStyle.Fill;
+            lbl_ThongTin.Font = new Font("Segoe UI", 10F);
+            lbl_ThongTin.ForeColor = SystemColors.ButtonHighlight;
+            lbl_ThongTin.Location = new Point(0, 0);
+            lbl_ThongTin.Name = "lbl_ThongTin";
+            lbl_ThongTin.Size = new Size(220, 62);
+            lbl_ThongTin.TabIndex = 6;
+            lbl_ThongTin.Text = "---- / ----";
+            lbl_ThongTin.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // panel3
+            // 
+            panel3.Controls.Add(btn_DangXuat);
+            panel3.Dock = DockStyle.Bottom;
+            panel3.Location = new Point(0, 492);
+            panel3.Name = "panel3";
+            panel3.Size = new Size(220, 62);
+            panel3.TabIndex = 8;
+            // 
+            // btn_DangXuat
+            // 
+            btn_DangXuat.BackColor = Color.FromArgb(255, 128, 128);
+            btn_DangXuat.Dock = DockStyle.Fill;
+            btn_DangXuat.FlatAppearance.BorderSize = 0;
+            btn_DangXuat.FlatStyle = FlatStyle.Flat;
+            btn_DangXuat.Font = new Font("Segoe UI", 12F);
+            btn_DangXuat.ForeColor = Color.Black;
+            btn_DangXuat.Location = new Point(0, 0);
+            btn_DangXuat.Name = "btn_DangXuat";
+            btn_DangXuat.Size = new Size(220, 62);
+            btn_DangXuat.TabIndex = 10;
+            btn_DangXuat.Text = "Đăng xuất";
+            btn_DangXuat.UseVisualStyleBackColor = false;
+            btn_DangXuat.Click += btn_DangXuat_Click;
             // 
             // button2
             // 
@@ -75,17 +127,6 @@
             button2.Text = "Quản lý lương";
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
-            // 
-            // lblClock
-            // 
-            lblClock.AutoSize = true;
-            lblClock.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblClock.ForeColor = SystemColors.ButtonHighlight;
-            lblClock.Location = new Point(66, 502);
-            lblClock.Name = "lblClock";
-            lblClock.Size = new Size(78, 31);
-            lblClock.TabIndex = 6;
-            lblClock.Text = "--:--:--";
             // 
             // button1
             // 
@@ -190,7 +231,6 @@
             // 
             timer1.Enabled = true;
             timer1.Interval = 1000;
-            timer1.Tick += timer1_Tick;
             // 
             // FrmQuanLy
             // 
@@ -204,7 +244,8 @@
             Text = "Quản lý nhân viên";
             Load += Dashboard_Load;
             PanelMenu.ResumeLayout(false);
-            PanelMenu.PerformLayout();
+            panel4.ResumeLayout(false);
+            panel3.ResumeLayout(false);
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
@@ -223,8 +264,11 @@
         private Panel panelDesktopPane;
         private Button ButtonChamCong;
         private Button button1;
-        private Label lblClock;
         private System.Windows.Forms.Timer timer1;
         private Button button2;
+        private Panel panel3;
+        private Panel panel4;
+        private Label lbl_ThongTin;
+        private Button btn_DangXuat;
     }
 }
