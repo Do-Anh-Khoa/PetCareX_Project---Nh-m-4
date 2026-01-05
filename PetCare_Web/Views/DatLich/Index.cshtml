@@ -1,0 +1,43 @@
+﻿@model PetCare_Web.Models.LichHen
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3>📅 Đặt Lịch Khám Online</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="TaoLich">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Chọn Chi Nhánh</label>
+                        <select asp-for="MaCn" class="form-control" asp-items="ViewBag.MaCn"></select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Chọn Bác Sĩ (Tra cứu)</label>
+                        <select asp-for="MaBs" class="form-control" asp-items="ViewBag.MaBs">
+                            <option value="">-- Chọn bác sĩ --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Ngày Hẹn</label>
+                        <input asp-for="NgayHen" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Giờ Hẹn</label>
+                        <input asp-for="GioHen" type="time" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ghi chú / Triệu chứng</label>
+                    <textarea asp-for="GhiChu" class="form-control" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100">Xác Nhận Đặt Lịch</button>
+            </form>
+        </div>
+    </div>
+</div>

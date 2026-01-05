@@ -1,0 +1,40 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Đăng Nhập - PetCareX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(120deg, #2980b9, #8e44ad); height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 400px; }
+    </style>
+</head>
+<body>
+    <div class="login-card text-center">
+        <h2 class="text-primary fw-bold mb-4">🐾 PetCareX</h2>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <form action="/TaiKhoan/Login" method="post">
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold">Tài khoản</label>
+                <input type="text" name="username" class="form-control" placeholder="Ví dụ: khach1" required>
+            </div>
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold">Mật khẩu</label>
+                <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">ĐĂNG NHẬP</button>
+        </form>
+        <div class="mt-3">
+            <small class="text-muted">Tài khoản mẫu: <b>khach1</b> / Pass: <b>pass</b></small>
+        </div>
+    </div>
+</body>
+</html>

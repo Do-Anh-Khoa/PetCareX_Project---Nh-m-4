@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Lịch sử hoạt động";
+    var lichKham = ViewBag.LichKham as IEnumerable<PetCare_Web.Models.LichHen>;
+    var donHang = ViewBag.DonHang as IEnumerable<PetCare_Web.Models.HoaDon>;
+}
+
+<div class="container mt-4">
+    <h2>📜 Hồ Sơ Cá Nhân</h2>
+
+    <div class="card mb-4 mt-3">
+        <div class="card-header bg-info text-white">
+            <h5>🩺 Lịch Sử Đặt Lịch & Khám Bệnh</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Bác sĩ</th>
+                        <th>Chi nhánh</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (lichKham != null) {
+                        foreach (var item in lichKham)
+                        {
+                            <tr>
+                                <td>@item.NgayHen (@item.GioHen)</td>
+                                <td>@item.MaBsNavigation?.HoTen</td>
+                                <td>@item.MaCnNavigation?.TenChiNhanh</td>
+                                <td>
+                                    @if(item.TrangThai == "ChoXacNhan") { <span class="badge bg-warning text-dark">Chờ duyệt</span> }
+                                    else if(item.TrangThai == "DaXacNhan") { <span class="badge bg-primary">Đã duyệt</span> }
+                                    else { <span class="badge bg-success">Hoàn tất</span> }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5>🛍️ Lịch Sử Mua Hàng</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Mã HĐ</th>
+                        <th>Ngày mua</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (donHang != null) {
+                        foreach (var item in donHang)
+                        {
+                            <tr>
+                                <td>@item.MaHd</td>
+                                <td>@item.NgayLap</td>
+                                <td>@string.Format("{0:N0} đ", item.TongTien)</td>
+                                <td>@item.TrangThai</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

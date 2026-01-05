@@ -38,8 +38,8 @@ app.UseSession();
 
 app.UseAuthorization();
 
+// Tìm đoạn app.MapControllerRoute và sửa thành:
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
+    pattern: "{controller=TaiKhoan}/{action=Login}/{id?}");
 app.Run();
