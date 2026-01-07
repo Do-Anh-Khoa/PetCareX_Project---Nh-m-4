@@ -19,16 +19,53 @@ namespace PetCare_WinForm
 {
     public partial class ChamCongNV : Form
     {
-        private readonly PetCareContext _context = new PetCareContext();
+        private Size originalFormSize;
+        private Dictionary<Control, Rectangle> ControlBounds = new Dictionary<Control, Rectangle>();
+        private readonly PetCareContext _context;
+        string maNV_DangNhap;
 
-        public ChamCongNV()
+        public ChamCongNV(string maNV_DangNhap)
         {
             InitializeComponent();
+            _context = new PetCareContext();
+            this.maNV_DangNhap = maNV_DangNhap;
+            this.AutoScaleMode = AutoScaleMode.Dpi;
         }
 
         private void ChamCongNV_Load(object sender, EventArgs e)
         {
+            originalFormSize = this.Size;
+            StoreControlBounds(this);
             TimerChamCong.Start();
+        }
+
+        private void ChamCongNV_Resize(object sender, EventArgs e)
+        {
+            float xRatio = (float)this.Width / (float)originalFormSize.Width;
+            float yRatio = (float)this.Height / (float)originalFormSize.Height;
+            foreach (Control ctrl in this.Controls)
+            {
+                if (!ControlBounds.ContainsKey(ctrl)) return;
+                    Rectangle r = ControlBounds[ctrl];
+                int newX = (int)(r.X * xRatio);
+                int newY = (int)(r.Y * yRatio);
+                int newWidth = (int)(r.Width * xRatio);
+                int newHeight = (int)(r.Height * yRatio);
+                ctrl.Bounds = new Rectangle(newX, newY, newWidth, newHeight);
+            }
+        }
+
+        private void StoreControlBounds(Control parent)
+        {
+            foreach (Control ctrl in parent.Controls)
+            {
+                ControlBounds[ctrl] = ctrl.Bounds;
+
+                if (ctrl.Controls.Count > 0)
+                {
+                    StoreControlBounds(ctrl);
+                }
+            }
         }
 
         private void TimerChamCong_Tick(object sender, EventArgs e)
@@ -68,6 +105,17 @@ namespace PetCare_WinForm
         // Nút CHECK-IN
         private void button3_Click(object sender, EventArgs e)
         {
+            if(textMaNhanVien.Text != maNV_DangNhap)
+            {
+                MessageBox.Show(
+                    "Bạn chỉ được chấm công cho chính mình!",
+                    "Lỗi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return;
+            }
+
             try
             {
                 try
@@ -105,6 +153,17 @@ namespace PetCare_WinForm
         // Nút CHECK-OUT
         private void button2_Click(object sender, EventArgs e)
         {
+            if (textMaNhanVien.Text != maNV_DangNhap)
+            {
+                MessageBox.Show(
+                    "Bạn chỉ được chấm công cho chính mình!",
+                    "Lỗi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return;
+            }
+
             try
             {
                 try

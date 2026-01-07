@@ -1,18 +1,20 @@
-﻿USE data10; -- Đổi tên DB của bạn
+﻿USE data9; -- ĐỔI TÊN DB CỦA BẠN Ở ĐÂY
 GO
 
+-- CẤU HÌNH TỐI ƯU TỐC ĐỘ
 SET NOCOUNT ON;
 SET DATEFORMAT dmy;
 
--- 1. TẮT RÀNG BUỘC
+-- 1. TẮT RÀNG BUỘC ĐỂ INSERT NHANH NHẤT CÓ THỂ
 EXEC sp_msforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT all';
 GO
 
-PRINT '>>> BẮT ĐẦU SINH DỮ LIỆU V11 (FIX: RANDOM VACCINE ĐA DẠNG & MUA NHIỀU SP)...';
+PRINT '>>> KHOI DONG: SINH 1.000.000 DONG DU LIEU (MAT KHOANG 15-30 PHUT)...';
 
 -----------------------------------------------------------------------------
--- BƯỚC 1: CLEAN UP & PREPARE DATA POOLS
+-- BƯỚC 1: DỌN DẸP & CHUẨN BỊ KHO DỮ LIỆU
 -----------------------------------------------------------------------------
+-- Xóa bảng tạm
 IF OBJECT_ID('tempdb..#Ho') IS NOT NULL DROP TABLE #Ho;
 IF OBJECT_ID('tempdb..#TenDem') IS NOT NULL DROP TABLE #TenDem;
 IF OBJECT_ID('tempdb..#Ten') IS NOT NULL DROP TABLE #Ten;
@@ -21,7 +23,7 @@ IF OBJECT_ID('tempdb..#Review') IS NOT NULL DROP TABLE #Review;
 IF OBJECT_ID('tempdb..#ProductData') IS NOT NULL DROP TABLE #ProductData;
 IF OBJECT_ID('tempdb..#SucKhoe') IS NOT NULL DROP TABLE #SucKhoe;
 
--- Xóa dữ liệu cũ
+-- Xóa dữ liệu cũ (Sạch sẽ để đón 1 triệu dòng mới)
 DELETE FROM LICH_HEN;
 DELETE FROM CHI_TIET_TIEM_THANG; DELETE FROM CHI_TIET_TIEM; DELETE FROM CHI_TIET_MUA_HANG;
 DELETE FROM CHI_TIET_DD; DELETE FROM CHI_TIET_DV_SD; DELETE FROM DANH_GIA;
@@ -33,18 +35,19 @@ DELETE FROM LICH_SU_DIEU_DONG; DELETE FROM NHAN_VIEN;
 DELETE FROM TON_KHO_SAN_PHAM; DELETE FROM TON_KHO_VACCINE;
 DELETE FROM SAN_PHAM; DELETE FROM VACCINE; DELETE FROM CA_LAM_VIEC; DELETE FROM CHI_NHANH; DELETE FROM TAI_KHOAN;
 
--- Tạo bảng LICH_HEN và update HOA_DON nếu chưa có
+-- Đảm bảo bảng LICH_HEN tồn tại
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[LICH_HEN]') AND type in (N'U'))
 BEGIN
     CREATE TABLE LICH_HEN(MaLichHen varchar(20) NOT NULL PRIMARY KEY, NgayHen date, GioHen time(7), TrangThai nvarchar(50), GhiChu nvarchar(200), MaKH varchar(20), MaBS varchar(20), MaCN varchar(20));
 END
+-- Đảm bảo cột TrangThai trong HOA_DON
 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[HOA_DON]') AND name = 'TrangThai')
 BEGIN
     ALTER TABLE HOA_DON ADD TrangThai nvarchar(50) DEFAULT N'DaThanhToan';
 END
 GO
 
--- Tạo Pool dữ liệu
+-- Tạo Pool dữ liệu (Tên, Triệu chứng...)
 CREATE TABLE #Ho (Val NVARCHAR(20)); INSERT INTO #Ho VALUES (N'Nguyễn'),(N'Trần'),(N'Lê'),(N'Phạm'),(N'Huỳnh'),(N'Hoàng'),(N'Phan'),(N'Vũ'),(N'Đặng'),(N'Bùi');
 CREATE TABLE #TenDem (Val NVARCHAR(20)); INSERT INTO #TenDem VALUES (N'Văn'),(N'Hữu'),(N'Thị'),(N'Ngọc'),(N'Minh'),(N'Quốc'),(N'Thanh'),(N'Gia'),(N'Bảo'),(N'Mỹ');
 CREATE TABLE #Ten (Val NVARCHAR(20)); INSERT INTO #Ten VALUES (N'Hùng'),(N'Dũng'),(N'Lan'),(N'Hương'),(N'Tuấn'),(N'Kiệt'),(N'Vy'),(N'Trang'),(N'Sơn'),(N'Tâm'),(N'Phúc'),(N'Nhi');
@@ -58,10 +61,11 @@ CREATE TABLE #SucKhoe (Val NVARCHAR(50)); INSERT INTO #SucKhoe VALUES (N'Khỏe'
 GO
 
 -----------------------------------------------------------------------------
--- BƯỚC 2: MASTER DATA
+-- BƯỚC 2: MASTER DATA (CHI NHÁNH, VACCINE, SP, NHÂN VIÊN)
 -----------------------------------------------------------------------------
 PRINT '--> Sinh Master Data...';
 
+-- 1. Chi nhánh (10 CN)
 DECLARE @i INT = 1;
 WHILE @i <= 10 
 BEGIN
@@ -69,13 +73,13 @@ BEGIN
     SET @i = @i + 1;
 END
 
--- Vaccine (5 loại)
+-- 2. Vaccine (5 Loại)
 INSERT INTO VACCINE VALUES 
 ('VC01', N'Dại', 'Cho/Meo', 150000), ('VC02', N'5 Bệnh', 'Cho', 350000), 
 ('VC03', N'7 Bệnh', 'Cho', 450000), ('VC04', N'Giảm Bạch Cầu', 'Meo', 300000), 
 ('VC05', N'FIP', 'Meo', 500000);
 
--- SP (50 loại)
+-- 3. Sản phẩm (50 Loại)
 SET @i = 1;
 WHILE @i <= 50
 BEGIN
@@ -85,38 +89,43 @@ BEGIN
     SET @i = @i + 1;
 END
 
--- NV (50 người)
+-- 4. Nhân viên (TĂNG LÊN 100 NGƯỜI ĐỂ PHỤC VỤ 1 TRIỆU ĐƠN)
 SET @i = 1;
-WHILE @i <= 50
+WHILE @i <= 100 
 BEGIN
-    DECLARE @MaCN VARCHAR(20) = 'CN' + CAST(((@i - 1) / 5) + 1 AS VARCHAR);
-    DECLARE @ChucVu NVARCHAR(50) = CASE WHEN (@i%5)=1 THEN 'QuanLy' WHEN (@i%5)<=3 THEN 'BacSi' ELSE 'BanHang' END;
+    -- 10 Chi nhánh -> Mỗi chi nhánh 10 nhân viên
+    DECLARE @MaCN VARCHAR(20) = 'CN' + CAST(((@i - 1) / 10) + 1 AS VARCHAR);
+    DECLARE @ChucVu NVARCHAR(50) = CASE WHEN (@i%10)=1 THEN 'QuanLy' WHEN (@i%10)<=4 THEN 'BacSi' ELSE 'BanHang' END;
     DECLARE @Luong DECIMAL(18,0) = CASE WHEN @ChucVu='QuanLy' THEN 20000000 WHEN @ChucVu='BacSi' THEN 15000000 ELSE 7000000 END;
     DECLARE @UserNV NVARCHAR(100) = 'staff'+CAST(@i AS VARCHAR);
 
     INSERT INTO TAI_KHOAN (UserName, MatKhau, QuyenHan) VALUES (@UserNV, '123', @ChucVu);
     DECLARE @NameNV NVARCHAR(100) = (SELECT TOP 1 Val FROM #Ho ORDER BY NEWID())+' '+(SELECT TOP 1 Val FROM #Ten ORDER BY NEWID());
-    INSERT INTO NHAN_VIEN VALUES ('NV'+CAST(@i AS VARCHAR), @NameNV, DATEADD(DAY, -(ABS(CHECKSUM(NEWID())) % 10000) - 7000, GETDATE()), CASE WHEN (ABS(CHECKSUM(NEWID()))%2)=0 THEN N'Nam' ELSE N'Nữ' END, DATEADD(DAY, -(ABS(CHECKSUM(NEWID())) % 1000), GETDATE()), @ChucVu, @Luong, @MaCN, @UserNV);
+    
+    INSERT INTO NHAN_VIEN (MaNV, HoTen, NgaySinh, GioiTinh, NgayVaoLam, ChucVu, LuongCoBan, MaCN, UserName)
+    VALUES ('NV'+CAST(@i AS VARCHAR), @NameNV, DATEADD(DAY, -(ABS(CHECKSUM(NEWID())) % 10000) - 7000, GETDATE()), CASE WHEN (ABS(CHECKSUM(NEWID()))%2)=0 THEN N'Nam' ELSE N'Nữ' END, DATEADD(DAY, -(ABS(CHECKSUM(NEWID())) % 1000), GETDATE()), @ChucVu, @Luong, @MaCN, @UserNV);
     SET @i = @i + 1;
 END
 
 INSERT INTO CA_LAM_VIEC VALUES ('CA1', N'Sáng', '08:00', '12:00'), ('CA2', N'Chiều', '13:00', '17:00'), ('CA3', N'Tối', '17:00', '21:00');
 
--- Tồn kho (Random ngày)
+-- 5. Tồn kho
 INSERT INTO TON_KHO_SAN_PHAM (MaCN, MaSP, SoLuong, NgaySanXuat, NgayHetHan)
-SELECT CN.MaCN, SP.MaSP, 50 + ABS(CHECKSUM(NEWID())%100), DATEADD(DAY, -ABS(CHECKSUM(NEWID())%365), GETDATE()), DATEADD(DAY, ABS(CHECKSUM(NEWID())%365) + 100, GETDATE()) FROM CHI_NHANH CN CROSS JOIN SAN_PHAM SP;
+SELECT CN.MaCN, SP.MaSP, 500 + ABS(CHECKSUM(NEWID())%500), DATEADD(DAY, -ABS(CHECKSUM(NEWID())%365), GETDATE()), DATEADD(DAY, ABS(CHECKSUM(NEWID())%365) + 100, GETDATE()) FROM CHI_NHANH CN CROSS JOIN SAN_PHAM SP;
 
 INSERT INTO TON_KHO_VACCINE (MaCN, MaVC, SoLo, SoLuong, NgaySanXuat, NgayHetHan)
-SELECT CN.MaCN, VC.MaVC, 'LO'+CAST(ABS(CHECKSUM(NEWID())%100) AS VARCHAR), 500, DATEADD(DAY, -ABS(CHECKSUM(NEWID())%200), GETDATE()), DATEADD(DAY, ABS(CHECKSUM(NEWID())%200)+100, GETDATE()) FROM CHI_NHANH CN CROSS JOIN VACCINE VC;
+SELECT CN.MaCN, VC.MaVC, 'LO'+CAST(ABS(CHECKSUM(NEWID())%100) AS VARCHAR), 5000, DATEADD(DAY, -ABS(CHECKSUM(NEWID())%200), GETDATE()), DATEADD(DAY, ABS(CHECKSUM(NEWID())%200)+100, GETDATE()) FROM CHI_NHANH CN CROSS JOIN VACCINE VC;
 GO 
 
 -----------------------------------------------------------------------------
--- BƯỚC 3: KHÁCH HÀNG & THÚ CƯNG
+-- BƯỚC 3: KHÁCH HÀNG (TĂNG LÊN 50.000 ĐỂ CÂN BẰNG VỚI 1 TRIỆU ĐƠN)
 -----------------------------------------------------------------------------
-PRINT '--> Sinh 5.000 Khách hàng...';
+PRINT '--> Sinh 50.000 Khách hàng (Quy mô lớn)...';
 DECLARE @i INT = 1;
+DECLARE @MaxKH INT = 50000; -- Tăng khách hàng lên 50k
+
 BEGIN TRANSACTION
-WHILE @i <= 5000
+WHILE @i <= @MaxKH
 BEGIN
     DECLARE @UserKH NVARCHAR(100) = 'khach'+CAST(@i AS VARCHAR);
     INSERT INTO TAI_KHOAN (UserName, MatKhau, QuyenHan) VALUES (@UserKH, 'pass', 'KhachHang');
@@ -127,6 +136,7 @@ BEGIN
     INSERT INTO KHACH_HANG (MaKH, HoTen, SoDT, Email, CCCD, GioiTinh, NgaySinh, CapHoiVien, DiemTichLuy, UserName)
     VALUES ('KH'+CAST(@i AS VARCHAR), @NameKH, '09'+CAST(10000000+@i AS VARCHAR), 'user'+CAST(@i AS VARCHAR)+'_'+SUBSTRING(CONVERT(varchar(255), NEWID()),1,4)+'@gmail.com', '001'+CAST(100000000+@i AS VARCHAR), CASE WHEN (ABS(CHECKSUM(NEWID()))%2)=0 THEN N'Nam' ELSE N'Nữ' END, DATEADD(DAY, -(ABS(CHECKSUM(NEWID()))%15000) - 6570, GETDATE()), @Cap, CASE WHEN @Cap='VIP' THEN 5000 + ABS(CHECKSUM(NEWID())%1000) ELSE ABS(CHECKSUM(NEWID())%500) END, @UserKH);
     
+    -- Thú cưng
     DECLARE @NumPet INT = (ABS(CHECKSUM(NEWID())) % 2) + 1;
     DECLARE @j INT = 1;
     WHILE @j <= @NumPet
@@ -137,30 +147,34 @@ BEGIN
         SET @j = @j + 1;
     END
     SET @i = @i + 1;
-    IF (@i % 1000) = 0 BEGIN COMMIT TRANSACTION; BEGIN TRANSACTION; END
+    -- Commit mỗi 2000 dòng để nhẹ log
+    IF (@i % 2000) = 0 BEGIN COMMIT TRANSACTION; BEGIN TRANSACTION; PRINT '... Đã tạo '+CAST(@i AS VARCHAR)+' Khách hàng'; END
 END
 COMMIT TRANSACTION;
 GO
 
 -----------------------------------------------------------------------------
--- BƯỚC 4: GIAO DỊCH (FIX RANDOM VACCINE + MUA NHIỀU SP)
+-- BƯỚC 4: GIAO DỊCH - HÓA ĐƠN (1.000.000 DÒNG - BIG DATA)
 -----------------------------------------------------------------------------
-PRINT '--> Sinh 100.000 Giao dịch...';
+PRINT '--> BẮT ĐẦU SINH 1.000.000 HÓA ĐƠN (BƯỚC NÀY LÂU NHẤT)...';
 
-DECLARE @TotalHD INT = 100000;
+DECLARE @TotalHD INT = 1000000; -- MỤC TIÊU 1 TRIỆU
 DECLARE @CountHD INT = 1;
-DECLARE @DateRun DATE = '2023-01-01';
+DECLARE @DateRun DATE = '2022-01-01'; -- Bắt đầu từ 2022 để rải dữ liệu ra
 
 BEGIN TRANSACTION
 WHILE @CountHD <= @TotalHD
 BEGIN
-    IF (@CountHD % 130) = 0 SET @DateRun = DATEADD(DAY, 1, @DateRun);
+    -- Logic tăng ngày: 1.000.000 đơn / 800 ngày ~ 1250 đơn/ngày
+    IF (@CountHD % 1250) = 0 SET @DateRun = DATEADD(DAY, 1, @DateRun);
     IF @DateRun > GETDATE() SET @DateRun = DATEADD(DAY, -10, GETDATE());
 
-    DECLARE @MaKH VARCHAR(20) = 'KH' + CAST((ABS(CHECKSUM(NEWID())) % 5000) + 1 AS VARCHAR);
+    -- Random Actor
+    DECLARE @MaKH VARCHAR(20) = 'KH' + CAST((ABS(CHECKSUM(NEWID())) % 50000) + 1 AS VARCHAR); -- Random trong 50k khách
     DECLARE @MaCN VARCHAR(20) = 'CN' + CAST((ABS(CHECKSUM(NEWID())) % 10) + 1 AS VARCHAR);
+    -- Chọn NV thuộc CN đó (random trong 100 NV)
     DECLARE @MaNV VARCHAR(20) = (SELECT TOP 1 MaNV FROM NHAN_VIEN WHERE MaCN = @MaCN ORDER BY NEWID());
-    IF @MaNV IS NULL SET @MaNV = 'NV' + CAST((ABS(CHECKSUM(NEWID())) % 50) + 1 AS VARCHAR);
+    IF @MaNV IS NULL SET @MaNV = 'NV' + CAST((ABS(CHECKSUM(NEWID())) % 100) + 1 AS VARCHAR);
 
     DECLARE @MaHD VARCHAR(20) = 'HD' + CAST(@CountHD AS VARCHAR);
     DECLARE @MaDV VARCHAR(20) = 'DV' + CAST(@CountHD AS VARCHAR);
@@ -178,7 +192,7 @@ BEGIN
     DECLARE @Type INT = ABS(CHECKSUM(NEWID())) % 3; 
     DECLARE @TotalMoney DECIMAL(18,0) = 0;
 
-    -- MUA HÀNG (1-5 SP)
+    -- MUA HÀNG (1-5 Món)
     IF @Type = 0 
     BEGIN
         INSERT INTO DV_MUA_HANG (MaMuaHang, NhanVienBanHang) VALUES (@MaDV, @MaNV);
@@ -211,40 +225,33 @@ BEGIN
         INSERT INTO DV_KHAM (MaKham, TrieuChung, ChuanDoan, ToaThuoc, BacSiPhuTrach, NgayTaiKham, GiaKhamBenh) VALUES (@MaDV, @TC, @CD, @TT, @BS, DATEADD(DAY, 7, @DateRun), 200000);
         SET @TotalMoney = 200000;
     END
-    -- TIÊM 
+    -- TIÊM (Random VC01-VC05)
     ELSE 
     BEGIN
         DECLARE @BSTiem VARCHAR(20) = (SELECT TOP 1 MaNV FROM NHAN_VIEN WHERE ChucVu='BacSi' AND MaCN=@MaCN ORDER BY NEWID());
         IF @BSTiem IS NULL SET @BSTiem = @MaNV;
-        
-        -- *** LOGIC SỬA ĐỔI: TÍNH TOÁN MaVC NGẪU NHIÊN 1-5 ***
         DECLARE @RndNum INT = (ABS(CHECKSUM(NEWID())) % 5) + 1;
         DECLARE @RndVC VARCHAR(20) = 'VC0' + CAST(@RndNum AS VARCHAR);
         DECLARE @PriceVC DECIMAL(18,0) = (SELECT GiaVC FROM VACCINE WHERE MaVC = @RndVC);
 
         IF (ABS(CHECKSUM(NEWID())) % 2) = 0 
         BEGIN
-            -- Tiêm đơn lẻ với Vaccine random
             INSERT INTO DV_TIEM_PHONG_DON_LE (MaTiem, BacSiPhuTrach) VALUES (@MaDV, @BSTiem);
-            INSERT INTO CHI_TIET_TIEM (MaVC, MaTiem, NgayTiem, LieuLuong, Gia) 
-            VALUES (@RndVC, @MaDV, @DateRun, 1, @PriceVC);
+            INSERT INTO CHI_TIET_TIEM (MaVC, MaTiem, NgayTiem, LieuLuong, Gia) VALUES (@RndVC, @MaDV, @DateRun, 1, @PriceVC);
             SET @TotalMoney = @PriceVC;
         END
         ELSE 
         BEGIN
-            -- Tiêm gói với Vaccine random
-            INSERT INTO DV_TIEM_PHONG_THEO_THANG (MaGoi, TenGoi, SoThang, NgayDK, NgayKT, GiaGoi, BacSiPhuTrach) 
-            VALUES (@MaDV, N'Gói '+@RndVC, 6, @DateRun, DATEADD(M, 6, @DateRun), @PriceVC*5, @BSTiem);
-            
-            INSERT INTO CHI_TIET_TIEM_THANG (MaVC, MaGoi, LieuLuong, NgayTiem, LanTiem) 
-            VALUES (@RndVC, @MaDV, 1, @DateRun, 1);
+            INSERT INTO DV_TIEM_PHONG_THEO_THANG (MaGoi, TenGoi, SoThang, NgayDK, NgayKT, GiaGoi, BacSiPhuTrach) VALUES (@MaDV, N'Gói '+@RndVC, 6, @DateRun, DATEADD(M, 6, @DateRun), @PriceVC*5, @BSTiem);
+            INSERT INTO CHI_TIET_TIEM_THANG (MaVC, MaGoi, LieuLuong, NgayTiem, LanTiem) VALUES (@RndVC, @MaDV, 1, @DateRun, 1);
             SET @TotalMoney = @PriceVC*5;
         END
     END
 
     UPDATE HOA_DON SET TongTien = @TotalMoney WHERE MaHD = @MaHD;
 
-    IF (ABS(CHECKSUM(NEWID())) % 10) < 3
+    -- 20% Có đánh giá
+    IF (ABS(CHECKSUM(NEWID())) % 10) < 2
     BEGIN
         DECLARE @DiemDG FLOAT, @Cmt NVARCHAR(200);
         SELECT TOP 1 @DiemDG=Diem, @Cmt=Comment FROM #Review ORDER BY NEWID();
@@ -253,19 +260,26 @@ BEGIN
     END
 
     SET @CountHD = @CountHD + 1;
-    IF (@CountHD % 2000) = 0 BEGIN COMMIT TRANSACTION; BEGIN TRANSACTION; PRINT '... Đã tạo ' + CAST(@CountHD AS VARCHAR); END
+    -- Commit Batch 5000 dòng để không tràn log
+    IF (@CountHD % 5000) = 0 
+    BEGIN 
+        COMMIT TRANSACTION; 
+        BEGIN TRANSACTION; 
+        PRINT '... Đã tạo ' + CAST(@CountHD AS VARCHAR) + ' hóa đơn'; 
+        CHECKPOINT; -- Giải phóng log
+    END
 END
 COMMIT TRANSACTION;
 GO
 
 -----------------------------------------------------------------------------
--- BƯỚC 5: HR
+-- BƯỚC 5: HR (CHẤM CÔNG 100 NV)
 -----------------------------------------------------------------------------
 PRINT '--> Sinh dữ liệu HR...';
 DELETE FROM BANG_PHAN_CA;
 INSERT INTO BANG_PHAN_CA (MaCa, MaNV, NgayLamViec) SELECT 'CA' + CAST((ABS(CHECKSUM(NEWID())) % 3) + 1 AS VARCHAR), MaNV, '2024-01-01' FROM NHAN_VIEN;
 
-DECLARE @DateRun DATE = '2023-01-01';
+DECLARE @DateRun DATE = '2022-01-01'; -- Từ 2022
 DECLARE @EndRun DATE = GETDATE();
 
 WHILE @DateRun <= @EndRun
@@ -290,12 +304,12 @@ INSERT INTO CHI_TIET_DD (MaNV, MaDieuDong, NgayBatDau) VALUES ('NV1', 'DD01', '2
 GO
 
 -----------------------------------------------------------------------------
--- BƯỚC 6: SINH LỊCH HẸN (80.000 dòng)
+-- BƯỚC 6: SINH LỊCH HẸN (1.000.000 DÒNG)
 -----------------------------------------------------------------------------
-PRINT '--> Sinh dữ liệu LICH_HEN...';
+PRINT '--> Sinh 1.000.000 LICH_HEN (Buoc cuoi cung)...';
 DECLARE @i INT = 1;
-DECLARE @Total INT = 80000;
-DECLARE @NgayStart DATE = '2023-01-01';
+DECLARE @Total INT = 1000000; -- MỤC TIÊU 1 TRIỆU
+DECLARE @NgayStart DATE = '2022-01-01';
 
 BEGIN TRANSACTION
 WHILE @i <= @Total
@@ -305,7 +319,7 @@ BEGIN
     DECLARE @GioLH TIME = DATEADD(MINUTE, (ABS(CHECKSUM(NEWID()))%12)*60, '08:00');
     DECLARE @TT NVARCHAR(50) = CASE ABS(CHECKSUM(NEWID()))%4 WHEN 0 THEN N'ChoXacNhan' WHEN 1 THEN N'DaXacNhan' WHEN 2 THEN N'DaHoanThanh' ELSE N'Huy' END;
     DECLARE @MaCN VARCHAR(20) = 'CN' + CAST((ABS(CHECKSUM(NEWID()))%10)+1 AS VARCHAR);
-    DECLARE @MaKH VARCHAR(20) = 'KH' + CAST((ABS(CHECKSUM(NEWID()))%5000)+1 AS VARCHAR);
+    DECLARE @MaKH VARCHAR(20) = 'KH' + CAST((ABS(CHECKSUM(NEWID()))%50000)+1 AS VARCHAR); -- Random trong 50k khách
     DECLARE @MaBS VARCHAR(20) = (SELECT TOP 1 MaNV FROM NHAN_VIEN WHERE ChucVu='BacSi' AND MaCN=@MaCN ORDER BY NEWID());
     IF @MaBS IS NULL SET @MaBS = (SELECT TOP 1 MaNV FROM NHAN_VIEN WHERE ChucVu='BacSi' ORDER BY NEWID());
 
@@ -313,15 +327,19 @@ BEGIN
     VALUES (@MaLH, @NgayLH, @GioLH, @TT, NULL, @MaKH, @MaBS, @MaCN);
 
     SET @i += 1;
-    IF (@i % 2000) = 0 BEGIN COMMIT TRANSACTION; BEGIN TRANSACTION; PRINT '... '+CAST(@i AS VARCHAR); END
+    IF (@i % 5000) = 0 BEGIN COMMIT TRANSACTION; BEGIN TRANSACTION; PRINT '... Đã tạo '+CAST(@i AS VARCHAR)+' Lịch hẹn'; CHECKPOINT; END
 END
 COMMIT TRANSACTION;
 GO
 
--- BƯỚC 7: DỌN DẸP
+-----------------------------------------------------------------------------
+-- BƯỚC 7: DỌN DẸP & BẬT LẠI RÀNG BUỘC
 -----------------------------------------------------------------------------
 DROP TABLE #Ho; DROP TABLE #TenDem; DROP TABLE #Ten; DROP TABLE #TrieuChung; DROP TABLE #Review; DROP TABLE #ProductData; DROP TABLE #SucKhoe;
-PRINT '--> Bật lại ràng buộc...';
+PRINT '--> Bật lại ràng buộc (An toàn dữ liệu)...';
 EXEC sp_msforeachtable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all';
 GO
-PRINT '>>> HOÀN TẤT TOÀN BỘ!';
+
+PRINT '=======================================================';
+PRINT '>>> CHÚC MỪNG! BẠN ĐÃ CÓ DB VỚI 1.000.000 DÒNG GIAO DỊCH!';
+PRINT '=======================================================';

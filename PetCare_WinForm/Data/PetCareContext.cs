@@ -797,7 +797,8 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using PetCare_Web.Models;
 // Namespace chứa các Model của WinForm (LichHenView, KetQuaTimKiemCaLamViec...)
-using PetCare_WinForm.Models; 
+using PetCare_WinForm.Models;
+using static PetCare_WinForm.FrmTimKiemCaLam;
 
 namespace PetCare_Web.Data;
 
@@ -967,7 +968,7 @@ public partial class PetCareContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code.
         // Dùng Connection String từ Code 2 theo yêu cầu của bạn
-        => optionsBuilder.UseSqlServer("Server=LAPTOP-ORDALAOG\\SQLEXPRESS;Database=PetCareX_DB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True;");
+        => optionsBuilder.UseSqlServer("Data Source=LAPTOP-ORDALAOG\\SQLEXPRESS;Initial Catalog=data10;Integrated Security=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1350,7 +1351,9 @@ public partial class PetCareContext : DbContext
         modelBuilder.Entity<VaccineView>().HasNoKey().ToView(null);
         modelBuilder.Entity<ThongTinKhamView>().HasNoKey().ToView(null);
         modelBuilder.Entity<LichSuKhamResult>().HasNoKey().ToView(null);
-        
+        modelBuilder.Entity<ExistsOnly>().HasNoKey();
+        modelBuilder.Entity<NhanVienTaiKhoanVm>().HasNoKey();
+
         // 3. Extra Views
         modelBuilder.Entity<Top10BacSiDoanhThu>().HasNoKey().ToView("Top10BacSiDoanhThu");
         modelBuilder.Entity<KetQuaTimKiemCaLamViec>().HasNoKey().ToView(null);

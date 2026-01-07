@@ -48,7 +48,7 @@ namespace PetCare_WinForm
         {
             string selected = comboBox_TimKiemTheo.SelectedItem?.ToString();
             textBox_NhapThongTin.Visible = true;
-            btn_TimKiem.Visible = true;
+            btn_TimKiem.Visible = true; 
             if (selected == "Mã nhân viên")
             {
                 textBox_NhapThongTin.PlaceholderText = "Nhập mã nhân viên";

@@ -16,10 +16,28 @@ namespace PetCare_WinForm
         private ChamCongNV ChamCongNV;
 
         private Form _currentForm; // Form đang hiển thị
+        string maNV_DangNhap;
 
-        public FrmHome()
+        public FrmHome(string maNV_DangNhap, string tenNV_DangNhap, string chucVu_DangNhap)
         {
             InitializeComponent();
+
+            this.maNV_DangNhap = maNV_DangNhap;
+
+            if (chucVu_DangNhap == "QuanLy")
+            {
+                chucVu_DangNhap = "Quản Lý";
+            }
+            else if (chucVu_DangNhap == "NhanVien")
+            {
+                chucVu_DangNhap = "Nhân Viên";
+            }
+            else if (chucVu_DangNhap == "BacSi")
+            {
+                chucVu_DangNhap = "Bác Sĩ";
+            }
+
+            lbl_ThongTin.Text = $"{tenNV_DangNhap} ({chucVu_DangNhap})";
         }
 
         // Thêm hàm này vào trong class Dashboard
@@ -90,7 +108,7 @@ namespace PetCare_WinForm
         {
             if (_frmLichHen == null || _frmLichHen.IsDisposed)
             {
-                _frmLichHen = new Lich_Hen();
+                _frmLichHen = new Lich_Hen("", "", "");
             }
             ShowChildForm(_frmLichHen);
         }
@@ -126,7 +144,7 @@ namespace PetCare_WinForm
         {
             if (ChamCongNV == null || ChamCongNV.IsDisposed)
             {
-                ChamCongNV = new ChamCongNV();
+                ChamCongNV = new ChamCongNV(maNV_DangNhap);
             }
             ShowChildForm(ChamCongNV);
         }

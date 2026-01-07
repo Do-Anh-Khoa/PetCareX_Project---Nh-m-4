@@ -1,0 +1,69 @@
+﻿@{
+    Layout = null; // Không dùng layout chung
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Đăng Ký - PetCareX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 450px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-card">
+        <h3 class="text-center text-warning fw-bold mb-3">📝 Đăng Ký Thành Viên</h3>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger p-2">@ViewBag.Error</div>
+        }
+
+        <form action="/TaiKhoan/DangKy" method="post">
+            <div class="mb-2">
+                <label class="form-label fw-bold">Họ và Tên</label>
+                <input type="text" name="hoten" class="form-control" placeholder="Nhập họ tên..." required>
+            </div>
+            <div class="mb-2">
+                <label class="form-label fw-bold">Số Điện Thoại</label>
+                <input type="text" name="sdt" class="form-control" placeholder="Nhập SĐT..." required>
+            </div>
+            <div class="mb-2">
+                <label class="form-label fw-bold">Email (Tên đăng nhập)</label>
+                <input type="text" name="username" class="form-control" placeholder="Nhập email..." required>
+            </div>
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label fw-bold">Mật khẩu</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label fw-bold">Xác nhận MK</label>
+                    <input type="password" name="confirmPassword" class="form-control" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100 py-2 fw-bold text-white">ĐĂNG KÝ NGAY</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="/TaiKhoan/Login" class="text-decoration-none">Đã có tài khoản? Đăng nhập ngay</a>
+        </div>
+    </div>
+</body>
+</html>

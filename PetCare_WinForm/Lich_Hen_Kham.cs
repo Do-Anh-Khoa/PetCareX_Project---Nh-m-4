@@ -8,11 +8,27 @@ namespace PetCare_WinForm
     public partial class Lich_Hen : Form
     {
         private readonly PetCareContext _context;
+        string maNV_DangNhap;
 
-        public Lich_Hen()
+        public Lich_Hen(string maNV_DangNhap, string tenNV_DangNhap, string chucVu_DangNhap)
         {
             InitializeComponent();
             _context = new PetCareContext();
+            if (chucVu_DangNhap == "QuanLy")
+            {
+                chucVu_DangNhap = "Quản Lý";
+            }
+            else if (chucVu_DangNhap == "NhanVien")
+            {
+                chucVu_DangNhap = "Nhân Viên";
+            }
+            else if (chucVu_DangNhap == "BacSi")
+            {
+                chucVu_DangNhap = "Bác Sĩ";
+            }
+
+            this.maNV_DangNhap = maNV_DangNhap;
+            lbl_ThongTin.Text = $"{tenNV_DangNhap} ({chucVu_DangNhap})";
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -214,6 +230,12 @@ namespace PetCare_WinForm
 
             // Reload lịch hẹn sau khi khám xong
             LoadLichHen();
+        }
+
+        private void btn_ChamCong_Click(object sender, EventArgs e)
+        {
+            var chamCongForm = new ChamCongNV(maNV_DangNhap);
+            chamCongForm.ShowDialog();
         }
     }
 

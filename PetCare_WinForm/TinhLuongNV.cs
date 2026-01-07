@@ -16,11 +16,14 @@ namespace PetCare_WinForm
 {
     public partial class TinhLuongNV : Form
     {
+        private Size originalFormSize;
+        private Dictionary<Control, Rectangle> ControlBounds = new Dictionary<Control, Rectangle>();
         private readonly PetCareContext _context;
         public TinhLuongNV()
         {
             _context = new PetCareContext();
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
         }
 
         // Hàm hỗ trợ load bản lương, tách ra để có thể gọi khi xem lương và sau khi tính lương
@@ -39,6 +42,41 @@ namespace PetCare_WinForm
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void TinhLuongNV_Load(object sender, EventArgs e)
+        {
+            originalFormSize = this.Size;
+            StoreControlBounds(this);
+        }
+
+        private void TinhLuongNV_Resize(object sender, EventArgs e)
+        {
+            float xRatio = (float)this.Width / (float)originalFormSize.Width;
+            float yRatio = (float)this.Height / (float)originalFormSize.Height;
+            foreach (Control ctrl in this.Controls)
+            {
+                if (!ControlBounds.ContainsKey(ctrl)) return;
+                Rectangle r = ControlBounds[ctrl];
+                int newX = (int)(r.X * xRatio);
+                int newY = (int)(r.Y * yRatio);
+                int newWidth = (int)(r.Width * xRatio);
+                int newHeight = (int)(r.Height * yRatio);
+                ctrl.Bounds = new Rectangle(newX, newY, newWidth, newHeight);
+            }
+        }
+
+        private void StoreControlBounds(Control parent)
+        {
+            foreach (Control ctrl in parent.Controls)
+            {
+                ControlBounds[ctrl] = ctrl.Bounds;
+
+                if (ctrl.Controls.Count > 0)
+                {
+                    StoreControlBounds(ctrl);
+                }
             }
         }
 

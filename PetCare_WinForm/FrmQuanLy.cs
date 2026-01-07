@@ -8,16 +8,37 @@ namespace PetCare_WinForm
         private Button? currentButton;
         private Form? activeForm;
 
+        string maNV_DangNhap;
+        string tenNV_DangNhap;
+        string chucVu_DangNhap;
+
         // Constructor
-        public FrmQuanLy()
+        public FrmQuanLy(string maNV_DangNhap, string tenNV_DangNhap, string chucVu_DangNhap)
         {
             InitializeComponent();
+            this.maNV_DangNhap = maNV_DangNhap;
+            this.tenNV_DangNhap = tenNV_DangNhap;
+            this.chucVu_DangNhap = chucVu_DangNhap;
         }
 
         // Load dashboard
         private void Dashboard_Load(object sender, EventArgs e)
         {
             timer1.Start();
+            if (chucVu_DangNhap == "QuanLy")
+            {
+                chucVu_DangNhap = "Quản Lý";
+            }
+            else if(chucVu_DangNhap == "NhanVien")
+            {
+                chucVu_DangNhap = "Nhân Viên";
+            }
+            else if (chucVu_DangNhap == "BacSi")
+            {
+                chucVu_DangNhap = "Bác Sĩ";
+            }
+
+            lbl_ThongTin.Text = $"{tenNV_DangNhap} ({chucVu_DangNhap})";
         }
 
         // Helper methods for button activation (Effect only)
@@ -91,7 +112,7 @@ namespace PetCare_WinForm
         // Cham Cong Button Click (Function)
         private void ButtonChamCong_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new ChamCongNV(), sender);
+            OpenChildForm(new ChamCongNV(maNV_DangNhap), sender);
         }
 
         // Phan Ca Button Click (Function)
@@ -100,17 +121,23 @@ namespace PetCare_WinForm
             OpenChildForm(new PhanCaNewLayout(), sender);
         }
 
-        // Update clock in real time (Function)
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            lblClock.Text = DateTime.Now.ToString("HH:mm:ss");
-        }
+        //// Update clock in real time (Function)
+        //private void timer1_Tick(object sender, EventArgs e)
+        //{
+        //    lblClock.Text = DateTime.Now.ToString("HH:mm:ss");
+        //}
 
 
         // Quan ly Nhan Vien Button Click (Function)
         private void button2_Click(object sender, EventArgs e)
         {
             OpenChildForm(new TinhLuongNV(), sender);
+        }
+
+        private void btn_DangXuat_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Đăng xuất thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Close();
         }
     }
 }

@@ -40,9 +40,9 @@ namespace PetCare_WinForm
             // buttonXemLuong
             // 
             buttonXemLuong.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            buttonXemLuong.Location = new Point(260, 95);
+            buttonXemLuong.Location = new Point(250, 95);
             buttonXemLuong.Name = "buttonXemLuong";
-            buttonXemLuong.Size = new Size(125, 38);
+            buttonXemLuong.Size = new Size(139, 47);
             buttonXemLuong.TabIndex = 3;
             buttonXemLuong.Text = "Xem lương";
             buttonXemLuong.UseVisualStyleBackColor = true;
@@ -50,30 +50,33 @@ namespace PetCare_WinForm
             // 
             // dataGridView1
             // 
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(38, 161);
+            dataGridView1.Dock = DockStyle.Bottom;
+            dataGridView1.Location = new Point(0, 166);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(722, 256);
+            dataGridView1.Size = new Size(800, 284);
             dataGridView1.TabIndex = 4;
             // 
             // dateTimePicker_ChonThangNam
             // 
             dateTimePicker_ChonThangNam.CalendarFont = new Font("Segoe UI", 16.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             dateTimePicker_ChonThangNam.CustomFormat = "MM/yyyy";
+            dateTimePicker_ChonThangNam.Font = new Font("Segoe UI", 16F);
             dateTimePicker_ChonThangNam.Format = DateTimePickerFormat.Custom;
-            dateTimePicker_ChonThangNam.Location = new Point(260, 51);
+            dateTimePicker_ChonThangNam.Location = new Point(250, 35);
             dateTimePicker_ChonThangNam.Name = "dateTimePicker_ChonThangNam";
-            dateTimePicker_ChonThangNam.Size = new Size(274, 27);
-            dateTimePicker_ChonThangNam.TabIndex = 5;
             dateTimePicker_ChonThangNam.ShowUpDown = true;
+            dateTimePicker_ChonThangNam.Size = new Size(310, 43);
+            dateTimePicker_ChonThangNam.TabIndex = 5;
             // 
             // buttonTinhLuong
             // 
             buttonTinhLuong.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            buttonTinhLuong.Location = new Point(407, 95);
+            buttonTinhLuong.Location = new Point(419, 95);
             buttonTinhLuong.Name = "buttonTinhLuong";
-            buttonTinhLuong.Size = new Size(127, 38);
+            buttonTinhLuong.Size = new Size(141, 47);
             buttonTinhLuong.TabIndex = 6;
             buttonTinhLuong.Text = "Tính lương";
             buttonTinhLuong.UseVisualStyleBackColor = true;
@@ -90,6 +93,8 @@ namespace PetCare_WinForm
             Controls.Add(buttonXemLuong);
             Name = "TinhLuongNV";
             Text = "Quản lý lương";
+            Load += TinhLuongNV_Load;
+            Resize += TinhLuongNV_Resize;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
         }
