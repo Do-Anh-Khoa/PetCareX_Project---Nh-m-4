@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,22 +8,25 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PetCare_Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PetCare_Web</a>
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-paw"></i> PetCare_Web
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang Chủ</a>
                         </li>
-                    
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="SanPham" asp-action="Index">Mua Sắm</a>
                         </li>
@@ -33,6 +37,33 @@
                             <a class="nav-link text-dark" asp-controller="LichSu" asp-action="Index">Lịch Sử</a>
                         </li>
                     </ul>
+
+                    <ul class="navbar-nav ms-auto">
+                        @if (Context.Session.GetString("TenKH") != null)
+                        {
+                            // Đã đăng nhập
+                            <li class="nav-item">
+                                <span class="nav-link text-dark fw-bold">
+                                    Xin chào, @Context.Session.GetString("TenKH")
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-danger fw-bold" asp-controller="TaiKhoan" asp-action="Logout">
+                                    <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            // Chưa đăng nhập
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-bold" asp-controller="TaiKhoan" asp-action="Login">
+                                    <i class="fa-solid fa-user"></i> Đăng Nhập
+                                </a>
+                            </li>
+                        }
+                    </ul>
+
                 </div>
             </div>
         </nav>

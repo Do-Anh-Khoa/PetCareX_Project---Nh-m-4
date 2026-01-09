@@ -135,7 +135,7 @@
             // Choice_ChiNhanh
             // 
             Choice_ChiNhanh.FormattingEnabled = true;
-            Choice_ChiNhanh.Items.AddRange(new object[] { "CN1", "CN2", "CN3", "CN4", "CN5", "CN6", "CN7", "CN8", "CN9", "CN10" });
+            Choice_ChiNhanh.Items.AddRange(new object[] { "CN1", "CN2", "CN3", "CN4", "CN5", "CN6", "CN7", "CN8", "CN9", "CN10", "Tất cả"});
             Choice_ChiNhanh.Location = new Point(387, 412);
             Choice_ChiNhanh.Name = "Choice_ChiNhanh";
             Choice_ChiNhanh.Size = new Size(74, 28);

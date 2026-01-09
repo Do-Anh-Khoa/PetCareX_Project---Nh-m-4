@@ -19,7 +19,8 @@ namespace PetCare_WinForm
         private Size originalFormSize;
         private Dictionary<Control, Rectangle> ControlBounds = new Dictionary<Control, Rectangle>();
         private readonly PetCareContext _context;
-        
+        private string? maCN;
+
         public DoanhThu()
         {
             _context = new PetCareContext();
@@ -139,7 +140,7 @@ namespace PetCare_WinForm
                     EXEC sp_ThongKe_DoanhThuSanPham 
                         @TuNgay = {(dateTimePicker_TuNgay.Checked ? dateTimePicker_TuNgay.Value.Date : null)},
                         @DenNgay = {(dateTimePicker_DenNgay.Checked ? dateTimePicker_DenNgay.Value.Date : null)},
-                        @MaCN = {(Choice_ChiNhanh.SelectedItem)}")
+                        @MaCN = {(maCN)}")
                     .ToList();
                 dataGridView1.DataSource = data;
             }
@@ -159,7 +160,7 @@ namespace PetCare_WinForm
                     EXEC sp_ThongKe_SoLuotKham 
                         @TuNgay = {(dateTimePicker_TuNgay.Checked ? dateTimePicker_TuNgay.Value.Date : null)},
                         @DenNgay = {(dateTimePicker_DenNgay.Checked ? dateTimePicker_DenNgay.Value.Date : null)},
-                        @MaCN = {(Choice_ChiNhanh.SelectedItem)}")
+                        @MaCN = {(maCN)}")
                     .ToList();
                 dataGridView1.DataSource = data;
             }
@@ -179,7 +180,7 @@ namespace PetCare_WinForm
                     EXEC sp_ThongKe_DoanhThuTheoBacSi 
                         @TuNgay = {(dateTimePicker_TuNgay.Checked ? dateTimePicker_TuNgay.Value.Date : null)},
                         @DenNgay = {(dateTimePicker_DenNgay.Checked ? dateTimePicker_DenNgay.Value.Date : null)},
-                        @MaCN = {(Choice_ChiNhanh.SelectedItem)}")
+                        @MaCN = {(maCN)}")
                     .ToList();
                 dataGridView1.DataSource = data;
             }
@@ -199,7 +200,7 @@ namespace PetCare_WinForm
                     EXEC sp_ThongKe_DoanhThuPhongKham
                         @TuNgay = {(dateTimePicker_TuNgay.Checked ? dateTimePicker_TuNgay.Value.Date : null)},
                         @DenNgay = {(dateTimePicker_DenNgay.Checked ? dateTimePicker_DenNgay.Value.Date : null)},
-                        @MaCN = {(Choice_ChiNhanh.SelectedItem)},
+                        @MaCN = {(maCN)},
                         @TuKhoa = {(textBox1.Text)},
                         @SortOption = {(0)}")
                     .ToList();
@@ -286,7 +287,10 @@ namespace PetCare_WinForm
 
         private void Choice_ChiNhanh_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            if (Choice_ChiNhanh.SelectedItem?.ToString() == "Tất cả")
+                maCN = null;
+            else
+                maCN = Choice_ChiNhanh.SelectedItem?.ToString();
         }
     }
 }

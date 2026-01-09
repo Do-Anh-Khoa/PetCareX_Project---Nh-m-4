@@ -42,4 +42,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=TaiKhoan}/{action=Login}/{id?}");
+app.UseSession();
 app.Run();
